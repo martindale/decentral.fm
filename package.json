@@ -1,0 +1,23 @@
+{
+  "name": "decentral.fm",
+  "version": "0.0.1",
+  "description": "decentral.fm ============",
+  "main": "decentral.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/martindale/decentral.fm.git"
+  },
+  "author": "Eric Martindale",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/martindale/decentral.fm/issues"
+  },
+  "homepage": "https://github.com/martindale/decentral.fm",
+  "dependencies": {
+    "maki": "git://github.com/martindale/maki",
+    "maki-roller": "git://github.com/martindale/maki#develop"
+  }
+}

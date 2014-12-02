@@ -1,0 +1,12 @@
+.ui.grid
+  .row
+    .ui.pointing.large.menu.navbar.page.grid(ng-controller="headerController")
+      a.brand.item(href="/")
+        i.icon.maki.left
+        | #{config.service.name}
+
+      //- block for prepend/append/replace-able menu items
+      block mainMenu
+        a.item(href="/", title="#{config.service.name} Homepage", ng-class="{ active: isActive('/')}")
+          i.home.icon
+          |  Home
