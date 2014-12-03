@@ -7,7 +7,7 @@ block content
   else
     .ui.huge.header
       h1 Hello, #{config.service.name}.
-      p #{config.service.mission}
+      p !{ markdown( config.service.mission ) }
 
     .ui
       .ui.three.column.grid
@@ -23,14 +23,15 @@ block content
           .ui.green.segment.card
               h2.center-text Already registered?
               a.fluid.ui.button(href="/login", ng-class="{ active: isActive('/login') }") Log In
-          
+
       .ui.three.column.grid
         .column
           h3 Resources
           
           .ui.list
             each resource in resources
-              a.item(href="#{resource.routes.query}") #{resource.plural}
+              if (!resource.internal)
+                a.item(href="#{resource.routes.query}") #{resource.plural}
               
         .column
           h3 Services

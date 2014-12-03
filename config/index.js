@@ -6,6 +6,7 @@
 module.exports = {
   service: {
       name: process.env.MAKI_SERVICE_NAME || 'decentral.fm'
+    , authority: process.env.MAKI_SERVICE_AUTHORITY || 'decentral.fm'
     , namespace: process.env.MAKI_SERVICE_NAMESPACE || 'decentral.fm'
     , mission: process.env.MAKI_SERVICE_MISSION || 'decentralize _all_ the things.'
   },
