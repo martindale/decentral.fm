@@ -14,7 +14,7 @@ var Credit = decentral.define('Credit', {
   }
 });
 
-var Recording = decentral.define('Show', {
+var Show = decentral.define('Show', {
   attributes: {
     recorded: { type: Date },
     released: { type: Date , default: Date.now },

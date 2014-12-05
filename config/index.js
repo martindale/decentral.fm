@@ -9,6 +9,9 @@ module.exports = {
     , authority: process.env.MAKI_SERVICE_AUTHORITY || 'decentral.fm'
     , namespace: process.env.MAKI_SERVICE_NAMESPACE || 'decentral.fm'
     , mission: process.env.MAKI_SERVICE_MISSION || 'decentralize _all_ the things.'
+    , seeds: [
+        'decentral.fm'
+      ]
   },
   dns: {
     name: process.env.MAKI_DNS_NAME || 'decentral.fm'
