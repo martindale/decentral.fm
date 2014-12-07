@@ -16,11 +16,13 @@ var Credit = decentral.define('Credit', {
 
 var Show = decentral.define('Show', {
   attributes: {
+    title:    { type: String , max: 35 , required: true , name: true },
     recorded: { type: Date },
     released: { type: Date , default: Date.now },
-    title:    { type: String , max: 35 },
+    description: { type: String },
     credits:  [ Credit.Schema ]
-  }
+  },
+  icon: 'sound'
 });
 
 var Person = decentral.define('Person', {
@@ -38,7 +40,8 @@ var Person = decentral.define('Person', {
     'name.full': function() {
       return [ this.name.given , this.name.family ].join(' ');
     }
-  }
+  },
+  icon: 'user'
 });
 
 decentral.start();
