@@ -21,11 +21,12 @@ var Show = decentral.define('Show', {
     description: { type: String },
     hosts:  [ Credit.Schema ]
   },
-  icon: 'sound'
+  icon: 'announcement'
 });
 
 var Recording = decentral.define('Recording', {
   attributes: {
+    _show:    { type: ObjectId , ref: 'Show', required: true },
     title:    { type: String , max: 35 , required: true , name: true },
     recorded: { type: Date },
     released: { type: Date , default: Date.now },
