@@ -16,6 +16,16 @@ var Credit = decentral.define('Credit', {
 
 var Show = decentral.define('Show', {
   attributes: {
+    name:    { type: String , max: 35 , required: true , name: true },
+    created: { type: Date , default: Date.now },
+    description: { type: String },
+    hosts:  [ Credit.Schema ]
+  },
+  icon: 'sound'
+});
+
+var Recording = decentral.define('Show', {
+  attributes: {
     title:    { type: String , max: 35 , required: true , name: true },
     recorded: { type: Date },
     released: { type: Date , default: Date.now },
