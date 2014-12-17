@@ -27,7 +27,7 @@ module.exports = {
     }
   },
   database: {
-    name: process.env.MAKI_DATABASE_NAME   || 'maki',
+    name: process.env.MAKI_DATABASE_NAME   || 'decentral',
     masters: (process.env.MAKI_DATABASE_MASTERS)
       ? JSON.parse(process.env.MAKI_DATABASE_MASTERS)
       : [ 'localhost' ]
