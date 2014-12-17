@@ -24,7 +24,7 @@ var Show = decentral.define('Show', {
   icon: 'sound'
 });
 
-var Recording = decentral.define('Show', {
+var Recording = decentral.define('Recording', {
   attributes: {
     title:    { type: String , max: 35 , required: true , name: true },
     recorded: { type: Date },
