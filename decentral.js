@@ -21,7 +21,7 @@ var Show = decentral.define('Show', {
     description: { type: String },
     hosts:  [ Credit.Schema ]
   },
-  icon: 'announcement'
+  icon: 'unmute'
 });
 
 var Recording = decentral.define('Recording', {
