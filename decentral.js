@@ -16,7 +16,7 @@ var Credit = decentral.define('Credit', {
 
 var Show = decentral.define('Show', {
   attributes: {
-    name:    { type: String , max: 35 , required: true , name: true },
+    name:    { type: String , max: 35 , required: true , name: true , slug: true },
     created: { type: Date , default: Date.now },
     description: { type: String },
     hosts:  [ Credit.Schema ]
