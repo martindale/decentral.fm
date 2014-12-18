@@ -16,8 +16,9 @@ var Credit = decentral.define('Credit', {
 
 var Show = decentral.define('Show', {
   attributes: {
-    name:    { type: String , max: 35 , required: true , name: true , slug: true },
-    created: { type: Date , default: Date.now },
+    name:    { type: String , max: 35 , required: true , name: true },
+    slug:    { type: String , max: 35 , id: true , slug: true },
+    created: { type: Date , default: Date.now , required: true },
     description: { type: String },
     hosts:  [ Credit.Schema ]
   },
@@ -29,7 +30,7 @@ var Recording = decentral.define('Recording', {
     _show:    { type: ObjectId , ref: 'Show', required: true },
     title:    { type: String , max: 35 , required: true , name: true },
     recorded: { type: Date },
-    released: { type: Date , default: Date.now },
+    released: { type: Date , default: Date.now , required: true },
     description: { type: String },
     credits:  [ Credit.Schema ]
   },
