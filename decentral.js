@@ -2,9 +2,11 @@ var Maki = require('maki');
 var config = require('./config');
 var decentral = new Maki( config );
 
-var mongoose = require('mongoose');
+var mongoose = decentral.mongoose;
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
+
+console.log( Schema.Types );
 
 var Credit = decentral.define('Credit', {
   internal: true,
@@ -29,6 +31,7 @@ var Recording = decentral.define('Recording', {
   attributes: {
     _show:    { type: ObjectId , ref: 'Show', required: true },
     title:    { type: String , max: 35 , required: true , name: true },
+    audio:    { type: 'File' , required: true },
     recorded: { type: Date },
     released: { type: Date , default: Date.now , required: true },
     description: { type: String },
