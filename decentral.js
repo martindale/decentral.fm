@@ -6,8 +6,6 @@ var mongoose = decentral.mongoose;
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
-console.log( Schema.Types );
-
 var Credit = decentral.define('Credit', {
   internal: true,
   attributes: {
@@ -18,8 +16,7 @@ var Credit = decentral.define('Credit', {
 
 var Show = decentral.define('Show', {
   attributes: {
-    name:    { type: String , max: 35 , required: true , name: true },
-    slug:    { type: String , max: 35 , id: true , slug: true },
+    name:    { type: String , max: 35 , required: true , slug: true },
     created: { type: Date , default: Date.now , required: true },
     description: { type: String },
     hosts:  [ Credit.Schema ]
@@ -29,8 +26,8 @@ var Show = decentral.define('Show', {
 
 var Recording = decentral.define('Recording', {
   attributes: {
-    _show:    { type: ObjectId , ref: 'Show', required: true },
-    title:    { type: String , max: 35 , required: true , name: true },
+    _show:    { type: ObjectId , ref: 'Show', required: true , alias: 'show' },
+    title:    { type: String , max: 35 , required: true , slug: true },
     audio:    { type: 'File' , required: true },
     recorded: { type: Date },
     released: { type: Date , default: Date.now , required: true },
