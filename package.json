@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/martindale/decentral.fm",
   "dependencies": {
-    "maki": "git://github.com/martindale/maki#master",
+    "maki": "git://github.com/martindale/maki#decentral.fm",
     "moment": "^2.8.4"
   }
 }
