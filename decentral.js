@@ -7,6 +7,13 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
 var nt = require('nt');
+var SoundCloud = require('soundjs');
+
+// placeholder for a more robust config management solution
+decentral._config = require('./config/decentral');
+
+var sc = decentral._config.services.soundcloud;
+var soundcloud = new SoundCloud( sc.id , sc.secret );
 
 var Credit = decentral.define('Credit', {
   internal: true,
@@ -21,7 +28,13 @@ var Show = decentral.define('Show', {
     name:    { type: String , max: 35 , required: true , slug: true },
     created: { type: Date , default: Date.now , required: true },
     description: { type: String },
-    hosts:  [ Credit.Schema ]
+    hosts:     [ Credit.Schema ],
+    producers: [ Credit.Schema ],
+    remotes: {
+      soundcloud: {
+        
+      }
+    }
   },
   icon: 'unmute'
 });
@@ -56,6 +69,13 @@ var Person = decentral.define('Person', {
     }
   },
   icon: 'user'
+});
+
+Recording.on('create', function() {
+  var recording = this;
+  
+  
+  
 });
 
 decentral.start();
