@@ -18,4 +18,4 @@ npm link maki
 nodemon decentral.js
 ```
 
-You should now be able to edit ``./decentral.fm/decentral.js` for Resource changes, and `./maki` for general behavior changes.
+You should now be able to edit `./decentral.fm/decentral.js` for Resource changes, and `./maki` for general behavior changes.
