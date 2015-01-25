@@ -30,6 +30,10 @@ var Show = decentral.define('Show', {
     description: { type: String },
     hosts:     [ Credit.Schema ],
     producers: [ Credit.Schema ],
+    donations: {
+      type: { type: String , enum: ['bitcoin'] },
+      destination: { type: String }
+    },
     remotes: {
       soundcloud: {
         
