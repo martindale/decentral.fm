@@ -9,6 +9,29 @@ module.exports = {
     , authority: process.env.MAKI_SERVICE_AUTHORITY || 'decentral.fm'
     , namespace: process.env.MAKI_SERVICE_NAMESPACE || 'decentral.fm'
     , mission: process.env.MAKI_SERVICE_MISSION || 'decentralize _all_ the things.'
+    , description: 'decentral.fm is an experimental new publishing platform for media of all types.  Upload your content, have it hosted _everywhere_.  Distribute content to every platform, at the same time.'
+    , points: [
+      {
+        header: 'Publish once.',
+        description: 'No more need to upload the same file to multiple platforms.  decentral.fm publishes everything for you, automatically.'
+      },
+      {
+        header: 'Censorship resistant.',
+        description: 'Decentral.fm is a fully pre-configured network of decentralized servers that will automatically route around ~~censorship~~ damage.',
+        action: {
+          text: 'Learn More &raquo;',
+          link: '/about'
+        }
+      },
+      {
+        header: 'Already registered?',
+        description: 'Go on then.  Get logged in.  You\'re _groovy_.',
+        action: {
+          text: 'Log In &raquo;',
+          link: ''
+        }
+      }
+    ]
     , seeds: [
         'decentral.fm'
       ]
