@@ -52,8 +52,8 @@ var Recording = decentral.define('Recording', {
 var Person = decentral.define('Person', {
   attributes: {
     name: {
-      given: { type: String },
-      family: { type: String }
+      given: { type: String , max: 80 },
+      family: { type: String , max: 80 }
     },
     gpg: {
       fingerprint: { type: String }
