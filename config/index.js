@@ -10,6 +10,7 @@ module.exports = {
     , namespace: process.env.MAKI_SERVICE_NAMESPACE || 'decentral.fm'
     , mission: process.env.MAKI_SERVICE_MISSION || 'decentralize _all_ the things.'
     , description: 'decentral.fm is an experimental new publishing platform for media of all types.  Upload your content, have it hosted _everywhere_.  Distribute content to every platform, at the same time.'
+    , source: 'https://github.com/martindale/decentral.fm'
     , points: [
       {
         header: 'Publish once.',
