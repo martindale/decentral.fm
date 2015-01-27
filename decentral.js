@@ -25,7 +25,7 @@ var Show = decentral.define('Show', {
     producers: [ Credit.Schema ],
     donations: {
       type: { type: String , enum: ['bitcoin'] },
-      destination: { type: String }
+      destination: { type: String , max: 200 }
     },
     remotes: {
       soundcloud: {
