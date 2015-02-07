@@ -6,7 +6,7 @@ var mongoose = decentral.mongoose;
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
-var nt = require('nt');
+var Torrent = require('node-torrent-stream');
 
 var Credit = decentral.define('Credit', {
   internal: true,
