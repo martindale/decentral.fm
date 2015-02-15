@@ -1,7 +1,7 @@
 {
   "name": "decentral.fm",
   "version": "0.0.1",
-  "description": "decentral.fm ============",
+  "description": "An experimental new publishing platform for media of all types. Upload your content, have it hosted everywhere. Distribute content to every platform, at the same time.",
   "main": "decentral.js",
   "scripts": {
     "test": "mocha"

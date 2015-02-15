@@ -18,7 +18,7 @@ module.exports = {
       },
       {
         header: 'Censorship resistant.',
-        description: 'Decentral.fm is a fully pre-configured network of decentralized servers that will automatically route around ~~censorship~~ damage.',
+        description: 'Decentral.fm is a fully pre-configured network of decentralized servers that will automatically route around ~~censorship~~ _damage_.',
         action: {
           text: 'Learn More &raquo;',
           link: '/about'
