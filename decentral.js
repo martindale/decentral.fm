@@ -51,20 +51,31 @@ var Recording = decentral.define('Recording', {
   icon: 'sound'
 });
 
-Recording.on('file', function(file) {
-  var recording = this;
-  console.log('hello, file');
+var Checksum = decentral.define('Checksum', {
+  attributes: {
+    filename: { type: String },
+    _file: { type: ObjectId },
+    _recording: { type: ObjectId },
+    hash: { type: String , max: 35 },
+    type: { type: String , enum: ['md5'] },
+    created: { type: Date , default: Date.now }
+  },
+  icon: 'lock'
+});
+
+Recording.on('create', function(recording) {
+  if (!recording.audio) return;
   
-  var shasum = crypto.createHash('md5');
-  file.on('data', function(d) {
-    console.log('data event', d );
-    shasum.update(d);
-  });
-  
-  file.on('end', function() {
-    var d = shasum.digest('hex');
-    console.log('done! md5: ' , d );
-    recording.hash = d;
+  var db = decentral.datastore.mongoose.connections[0].db;
+  var files = db.collection('fs.files');
+
+  files.findOne({ _id: recording.audio }, function(err, thing) {
+    Checksum.create({
+      filename: thing.filename,
+      _file: thing._id,
+      hash: thing.md5,
+      type: 'md5'
+    });
   });
   
 });
