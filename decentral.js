@@ -63,21 +63,28 @@ var Checksum = decentral.define('Checksum', {
   icon: 'lock'
 });
 
-Recording.on('create', function(recording) {
-  if (!recording.audio) return;
-  
+/* Recording.on('file', function(file) {
+  var torrent = new Torrent();
+  torrent.pipe( process.stdout );
+  file.pipe( torrent );
+}); */
+
+Recording.pre('create', function(next, done) {
+  var recording = this;
+  if (!recording.audio) return next();
   var db = decentral.datastore.mongoose.connections[0].db;
   var files = db.collection('fs.files');
-
   files.findOne({ _id: recording.audio }, function(err, thing) {
     Checksum.create({
       filename: thing.filename,
       _file: thing._id,
       hash: thing.md5,
       type: 'md5'
+    }, function() {
+      recording.hash = thing.md5;
+      next();
     });
   });
-  
 });
 
 var Person = decentral.define('Person', {
