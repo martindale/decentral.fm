@@ -19,6 +19,6 @@
   "dependencies": {
     "maki": "git://github.com/martindale/maki#decentral.fm",
     "moment": "^2.8.4",
-    "node-torrent-stream": "git://github.com/unusualbob/node-torrent-stream"
+    "node-torrent-stream": "git://github.com/unusualbob/node-torrent-stream#master"
   }
 }

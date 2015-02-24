@@ -74,21 +74,30 @@ var Files = decentral.define('fs.file', {
 Recording.on('file:audio', function(audio) {
   console.log('received audio:', audio);
   
-  var torrent = new Torrent({ announce: 'test.com', name: audio.originalname });
+  var torrent = new Torrent({ announce: 'test.com', name: audio.filename });
   var file = decentral.datastore.gfs.createReadStream({
     _id: audio._id
   });
 
   var torrentstore = decentral.datastore.gfs.createWriteStream({
     mode: 'w',
-    filename: file.originalname + '.torrent',
+    filename: audio.filename + '.torrent',
     content_type: 'application/x-bittorrent'
   });
   torrentstore.on('error', function(data) {
     console.log('error!' , data );
   });
-  torrentstore.on('close', function(file) {
-    console.log('torrent created:', file );
+  torrentstore.on('close', function( torrentFile ) {
+    console.log('torrent created:',  torrentFile  );
+    // TODO: consider a new method, `patch`, for Maki
+    Recording.patch({
+      _id: audio.metadata.document
+    }, [
+      { op: 'add', path: '/torrent' , value: torrentFile._id }
+    ], function(err, num) {
+      if (err) console.error( err );
+      console.log('all done,', num , 'affected');
+    });
   });
   
   torrent.pipe( torrentstore );
