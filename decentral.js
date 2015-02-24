@@ -41,7 +41,8 @@ var Recording = decentral.define('Recording', {
   attributes: {
     _show:    { type: ObjectId , ref: 'Show', required: true , alias: 'show' },
     title:    { type: String , max: 35 , required: true , slug: true },
-    audio:    { type: 'File' },
+    audio:    { type: 'File', required: true },
+    torrent:  { type: ObjectId },
     recorded: { type: Date },
     released: { type: Date , default: Date.now , required: true },
     description: { type: String },
@@ -63,26 +64,53 @@ var Checksum = decentral.define('Checksum', {
   icon: 'lock'
 });
 
-/* Recording.on('file', function(file) {
-  var torrent = new Torrent();
-  torrent.pipe( process.stdout );
+var Files = decentral.define('fs.file', {
+  attributes: {
+    metadata: {}
+  },
+  icon: 'file'
+});
+
+Recording.on('file:audio', function(audio) {
+  console.log('received audio:', audio);
+  
+  var torrent = new Torrent({ announce: 'test.com', name: audio.originalname });
+  var file = decentral.datastore.gfs.createReadStream({
+    _id: audio._id
+  });
+
+  var torrentstore = decentral.datastore.gfs.createWriteStream({
+    mode: 'w',
+    filename: file.originalname + '.torrent',
+    content_type: 'application/x-bittorrent'
+  });
+  torrentstore.on('error', function(data) {
+    console.log('error!' , data );
+  });
+  torrentstore.on('close', function(file) {
+    console.log('torrent created:', file );
+  });
+  
+  torrent.pipe( torrentstore );
   file.pipe( torrent );
-}); */
+
+});
 
 Recording.pre('create', function(next, done) {
   var recording = this;
   if (!recording.audio) return next();
+
   var db = decentral.datastore.mongoose.connections[0].db;
   var files = db.collection('fs.files');
   files.findOne({ _id: recording.audio }, function(err, thing) {
-    Checksum.create({
+    return Checksum.create({
       filename: thing.filename,
       _file: thing._id,
       hash: thing.md5,
       type: 'md5'
     }, function() {
       recording.hash = thing.md5;
-      next();
+      return next();
     });
   });
 });
@@ -104,6 +132,19 @@ var Person = decentral.define('Person', {
     }
   },
   icon: 'user'
+});
+
+decentral.use({
+  extends: {
+    services: {
+      http: {
+        middleware: function(req, res, next) {
+          console.log(req.method , req.path, req.headers);
+          next();
+        }
+      }
+    }
+  }
 });
 
 decentral.start();
