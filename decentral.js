@@ -7,6 +7,8 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
 var Torrent = require('node-torrent-stream');
+var readTorrent = require('read-torrent');
+var magnet = require('magnet-uri');
 var crypto = require('crypto');
 
 var Credit = decentral.define('Credit', {
@@ -43,6 +45,7 @@ var Recording = decentral.define('Recording', {
     title:    { type: String , max: 35 , required: true , slug: true },
     audio:    { type: 'File', required: true },
     torrent:  { type: ObjectId },
+    magnet:   { type: String },
     recorded: { type: Date },
     released: { type: Date , default: Date.now , required: true },
     description: { type: String },
@@ -64,17 +67,13 @@ var Checksum = decentral.define('Checksum', {
   icon: 'lock'
 });
 
-var Files = decentral.define('fs.file', {
-  attributes: {
-    metadata: {}
-  },
-  icon: 'file'
-});
-
 Recording.on('file:audio', function(audio) {
   console.log('received audio:', audio);
   
-  var torrent = new Torrent({ announce: 'test.com', name: audio.filename });
+  var torrent = new Torrent({
+    name: audio.filename,
+    trackers: config.torrents.trackers
+  });
   var file = decentral.datastore.gfs.createReadStream({
     _id: audio._id
   });
@@ -88,16 +87,21 @@ Recording.on('file:audio', function(audio) {
     console.log('error!' , data );
   });
   torrentstore.on('close', function( torrentFile ) {
-    console.log('torrent created:',  torrentFile  );
-    // TODO: consider a new method, `patch`, for Maki
-    Recording.patch({
-      _id: audio.metadata.document
-    }, [
-      { op: 'add', path: '/torrent' , value: torrentFile._id }
-    ], function(err, num) {
+    readTorrent('http://localhost:15005/files/' + torrentFile._id , function(err, parsed) {
       if (err) console.error( err );
-      console.log('all done,', num , 'affected');
+      var magnetURI = magnet.encode( parsed );
+
+      Recording.patch({
+        _id: audio.metadata.document
+      }, [
+        { op: 'add', path: '/torrent' , value: torrentFile._id },
+        { op: 'add', path: '/magnet' , value: magnetURI }
+      ], function(err, num) {
+        if (err) console.error( err );
+        console.log('all done,', num , 'affected');
+      });
     });
+
   });
   
   torrent.pipe( torrentstore );

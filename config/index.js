@@ -67,6 +67,15 @@ module.exports = {
   sockets: {
       timeout: process.env.MAKI_SOCKETS_TIMEOUT || 30000
   },
+  torrents: {
+    trackers: [
+      'udp://tracker.openbittorrent.com:80',
+      'udp://tracker.publicbt.com:80',
+      'udp://tracker.ccc.de:80',
+      'udp://open.demonii.com:1337',
+      'udp://tracker.coppersurfer.tk:6969'
+    ]
+  },
   auth: {
     local: {
       enabled: true
