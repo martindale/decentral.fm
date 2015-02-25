@@ -20,7 +20,7 @@
     "magnet-uri": "^4.2.0",
     "maki": "git://github.com/martindale/maki#decentral.fm",
     "moment": "^2.8.4",
-    "node-torrent-stream": "git://github.com/unusualbob/node-torrent-stream#master",
+    "node-torrent-stream": "git://github.com/martindale/node-torrent-stream#decentral.fm",
     "read-torrent": "^1.2.0"
   }
 }
