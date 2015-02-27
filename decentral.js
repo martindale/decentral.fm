@@ -28,7 +28,7 @@ var Show = decentral.define('Show', {
     producers: [ Credit.Schema ],
     donations: {
       type: { type: String , enum: ['bitcoin'] },
-      destination: { type: String }
+      destination: { type: String , max: 35 }
     },
     remotes: {
       soundcloud: {
@@ -44,12 +44,12 @@ var Recording = decentral.define('Recording', {
     _show:    { type: ObjectId , ref: 'Show', required: true , alias: 'show' },
     title:    { type: String , max: 35 , required: true , slug: true },
     audio:    { type: 'File', required: true },
-    torrent:  { type: ObjectId },
-    magnet:   { type: String },
+    torrent:  { type: ObjectId , render: { create: false } },
+    magnet:   { type: String , max: 24 , render: { create: false } },
     recorded: { type: Date },
     released: { type: Date , default: Date.now , required: true },
     description: { type: String },
-    hash: { type: String , max: 32 },
+    hash: { type: String , max: 32 , render: { create: false } },
     credits:  [ Credit.Schema ]
   },
   icon: 'sound'
