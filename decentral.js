@@ -50,6 +50,7 @@ var Recording = decentral.define('Recording', {
     magnet:   { type: String , max: 24 , render: { create: false } },
     type:     { type: String , max: 5 , render: { create: false } },
     filename: { type: String , max: 255 , render: { create: false } },
+    length:   { type: Number , render: { create: false } },
     recorded: { type: Date },
     released: { type: Date , default: Date.now , required: true },
     description: { type: String },
@@ -100,7 +101,8 @@ Recording.on('file:media', function(media) {
         { op: 'add', path: '/torrent' , value: torrentFile._id },
         { op: 'add', path: '/magnet' , value: magnetURI },
         { op: 'add', path: '/type' , value: media.contentType },
-        { op: 'add', path: '/filename' , value: media.filename }
+        { op: 'add', path: '/filename' , value: media.filename },
+        { op: 'add', path: '/size' , value: media.length }
       ], function(err, num) {
         if (err) console.error( err );
         console.log('all done,', num , 'affected');
