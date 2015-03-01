@@ -9,8 +9,6 @@ var ObjectId = Schema.Types.ObjectId;
 var Torrent = require('node-torrent-stream');
 var readTorrent = require('read-torrent');
 var magnet = require('magnet-uri');
-var fileType = require('file-type');
-var async = require('async');
 
 var crypto = require('crypto');
 var stream = require('stream');
