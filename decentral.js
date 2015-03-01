@@ -50,7 +50,7 @@ var Recording = decentral.define('Recording', {
     magnet:   { type: String , max: 24 , render: { create: false } },
     type:     { type: String , max: 5 , render: { create: false } },
     filename: { type: String , max: 255 , render: { create: false } },
-    length:   { type: Number , render: { create: false } },
+    size:   { type: Number , render: { create: false } },
     recorded: { type: Date },
     released: { type: Date , default: Date.now , required: true },
     description: { type: String },
