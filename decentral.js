@@ -74,72 +74,43 @@ var Checksum = decentral.define('Checksum', {
 
 Recording.on('file:media', function(media) {
   console.log('received media:', media);
-  
-  var pass = new stream.PassThrough();
+
+  var torrent = new Torrent({
+    name: media.filename,
+    trackers: config.torrents.trackers
+  });
   var file = decentral.datastore.gfs.createReadStream({
     _id: media._id
   });
-  
-  async.parallel([
-    determineType,
-    createTorrent
-  ], function(err, results) {
-    var typeOfFile = results[0];
-    var torrentFile = results[1];
-    
-    torrentFile.type = typeOfFile.mime;
-    
-    Recording.patch({
-      _id: media.metadata.document
-    }, [
-      { op: 'add', path: '/torrent' , value: torrentFile._id },
-      { op: 'add', path: '/magnet' , value: torrentFile.magnet },
-      { op: 'add', path: '/type' , value: torrentFile.type }
-    ], function(err, num) {
-      if (err) console.error( err );
-      console.log('all done,', num , 'affected');
-    });
+  var torrentstore = decentral.datastore.gfs.createWriteStream({
+    mode: 'w',
+    filename: media.filename + '.torrent',
+    content_type: 'application/x-bittorrent'
   });
-  
-  function determineType( innerComplete ) {
-    var through = new stream.PassThrough();
-    through.once('data', function(chunk) {
-      //console.log(through);
-      var type = fileType( chunk );
-      console.log('TYPE EVALUATED: ' , type );
-      innerComplete( null , type );
-    });
-    pass.pipe( through );
-  }
+  torrentstore.on('error', function(data) {
+    console.log('error!' , data );
+  });
+  torrentstore.on('close', function( torrentFile ) {
+    readTorrent('http://localhost:15005/files/' + torrentFile._id , function(err, parsed) {
+      if (err) console.error( err );
+      var magnetURI = magnet.encode( parsed );
 
-  function createTorrent( innerComplete ) {
-    var torrent = new Torrent({
-      name: media.filename,
-      trackers: config.torrents.trackers
-    });
-    
-    var torrentstore = decentral.datastore.gfs.createWriteStream({
-      mode: 'w',
-      filename: media.filename + '.torrent',
-      content_type: 'application/x-bittorrent'
-    });
-    torrentstore.on('error', function(data) {
-      console.log('error!' , data );
-    });
-    torrentstore.on('close', function( torrentFile ) {
-      readTorrent('http://localhost:15005/files/' + torrentFile._id , function(err, parsed) {
+      Recording.patch({
+        _id: media.metadata.document
+      }, [
+        { op: 'add', path: '/torrent' , value: torrentFile._id },
+        { op: 'add', path: '/magnet' , value: magnetURI },
+        { op: 'add', path: '/type' , value: media.contentType }
+      ], function(err, num) {
         if (err) console.error( err );
-        torrentFile.magnet = magnet.encode( parsed );
-        console.log('torrent file magnet:', torrentFile.magnet );
-        return innerComplete( err , torrentFile );
+        console.log('all done,', num , 'affected');
       });
 
     });
-      
-    pass.pipe( torrentstore );
-  }
+  });
 
-  file.pipe( pass );
+  torrent.pipe( torrentstore );
+  file.pipe( torrent );
 
 });
 
