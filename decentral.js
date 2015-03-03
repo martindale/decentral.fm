@@ -77,7 +77,10 @@ Recording.on('file:media', function(media) {
 
   var torrent = new Torrent({
     name: media.filename,
-    trackers: config.torrents.trackers
+    trackers: config.torrents.trackers,
+    webseeds: config.service.seeds.map(function(x) {
+      return x + '/files/' + media._id
+    })
   });
   var file = decentral.datastore.gfs.createReadStream({
     _id: media._id

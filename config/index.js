@@ -32,10 +32,11 @@ module.exports = {
           link: ''
         }
       }
+    ],
+    seeds: [
+      //'https://decentral.fm'
+      'http://localhost:15005'
     ]
-    , seeds: [
-        'decentral.fm'
-      ]
   },
   dns: {
     name: process.env.MAKI_DNS_NAME || 'decentral.fm'
