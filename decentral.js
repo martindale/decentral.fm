@@ -31,11 +31,6 @@ var Show = decentral.define('Show', {
     donations: {
       type: { type: String , enum: ['bitcoin'] },
       destination: { type: String , max: 35 }
-    },
-    remotes: {
-      soundcloud: {
-        
-      }
     }
   },
   icon: 'unmute'
