@@ -6,12 +6,17 @@ var mongoose = decentral.mongoose;
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
+var Passport = require('maki-passport-local');
+var passport = new Passport({ resource: 'Person' });
+
 var Torrent = require('node-torrent-stream');
 var readTorrent = require('read-torrent');
 var magnet = require('magnet-uri');
 
 var crypto = require('crypto');
 var stream = require('stream');
+
+decentral.use( passport );
 
 var Credit = decentral.define('Credit', {
   internal: true,
@@ -139,7 +144,8 @@ var Person = decentral.define('Person', {
       given: { type: String , max: 30 },
       family: { type: String , max: 70 }
     },
-    profiles: {}
+    username: { type: String , max: 35 , slug: true },
+    password: { type: String , max: 70 , render: { query: false } }
   },
   virtuals: {
     'name.full': function() {
@@ -149,20 +155,7 @@ var Person = decentral.define('Person', {
   icon: 'user'
 });
 
-decentral.use({
-  extends: {
-    services: {
-      http: {
-        middleware: function(req, res, next) {
-          console.log(req.method , req.path, req.headers);
-          next();
-        }
-      }
-    }
-  }
-});
-
-decentral.start(function() {
+decentral.serve(['http']).start(function() {
   decentral.app.get('/search', function(req, res, next) {
     Show.query({}, function(err, shows) {
       return res.send({
