@@ -145,7 +145,7 @@ var Person = decentral.define('Person', {
       family: { type: String , max: 70 }
     },
     username: { type: String , max: 35 , slug: true },
-    password: { type: String , max: 70 , render: { query: false } }
+    password: { type: String , max: 70 , masked: true }
   },
   virtuals: {
     'name.full': function() {
