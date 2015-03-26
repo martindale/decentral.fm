@@ -156,6 +156,11 @@ var Person = decentral.define('Person', {
 });
 
 decentral.serve(['http']).start(function() {
+  
+  decentral.app.get('/about', function(req, res, next) {
+    return res.render('about');
+  });
+  
   decentral.app.get('/search', function(req, res, next) {
     Show.query({}, function(err, shows) {
       return res.send({
