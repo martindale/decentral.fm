@@ -18,7 +18,7 @@
   "homepage": "https://github.com/martindale/decentral.fm",
   "dependencies": {
     "magnet-uri": "^4.2.0",
-    "maki": "git://github.com/martindale/maki#decentral.fm",
+    "maki": "git://github.com/martindale/maki",
     "maki-passport-local": "git://github.com/martindale/maki-passport-local#master",
     "moment": "^2.8.4",
     "node-torrent-stream": "git://github.com/martindale/node-torrent-stream#decentral.fm",
