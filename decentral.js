@@ -53,9 +53,11 @@ var Recording = decentral.define('Recording', {
     size:   { type: Number , render: { create: false } },
     recorded: { type: Date },
     released: { type: Date , default: Date.now , required: true },
-    description: { type: String },
+    description: { type: String , format: 'markdown' },
     hash: { type: String , max: 32 , render: { create: false } },
-    credits:  [ Credit.Schema ]
+    credits:  [ Credit.Schema ],
+    // TODO: remove this in favor of a "Sources" object
+    youtube: { type: String }
   },
   icon: 'sound'
 });
