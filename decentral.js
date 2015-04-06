@@ -74,6 +74,15 @@ var Checksum = decentral.define('Checksum', {
   icon: 'lock'
 });
 
+Recording.post('query', function(next, done) {
+  var recordings = this;
+  Show.Model.populate( recordings , {
+    path: '_show'
+  }, function(err, populatedRecordings) {
+    next( err , populatedRecordings );
+  });
+});
+
 Recording.on('file:media', function(media) {
   console.log('received media:', media);
 
