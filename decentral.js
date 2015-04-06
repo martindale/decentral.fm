@@ -18,12 +18,9 @@ var stream = require('stream');
 
 decentral.use( passport );
 
-var Credit = decentral.define('Credit', {
-  internal: true,
-  attributes: {
-    _person: { type: ObjectId , ref: 'Person', required: true },
-    role: { type: String , enum: ['host', 'producer', 'guest'] }
-  }
+var Credit = new decentral.mongoose.Schema({
+  _person: { type: ObjectId , ref: 'Person', required: true },
+  role: { type: String , enum: ['host', 'producer', 'guest'] , required: true }
 });
 
 var Show = decentral.define('Show', {
@@ -31,7 +28,7 @@ var Show = decentral.define('Show', {
     name:    { type: String , max: 35 , required: true , slug: true },
     created: { type: Date , default: Date.now , required: true },
     description: { type: String },
-    credits:     [ Credit.Schema ],
+    credits:     [ Credit ],
     donations: {
       type: { type: String , enum: ['bitcoin'] },
       destination: { type: String , max: 35 }
@@ -39,6 +36,8 @@ var Show = decentral.define('Show', {
   },
   icon: 'unmute'
 });
+
+console.log( Credit );
 
 var Recording = decentral.define('Recording', {
   attributes: {
@@ -54,7 +53,7 @@ var Recording = decentral.define('Recording', {
     released: { type: Date , default: Date.now , required: true },
     description: { type: String , format: 'markdown' },
     hash: { type: String , max: 32 , render: { create: false } },
-    credits:  [ Credit.Schema ],
+    credits:  [ Credit ],
     // TODO: remove this in favor of a "Sources" object
     youtube: { type: String }
   },
