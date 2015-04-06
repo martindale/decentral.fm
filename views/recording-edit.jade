@@ -1,0 +1,34 @@
+extends ../node_modules/maki/views/layouts/default
+
+block content
+
+  h1 #{item.title}
+
+  h2 Preview
+  .preview !{ markdown( item.description ) }
+  
+  h2 Edit
+  
+  form.ui.form(action="/recordings/#{item.slug}", method="POST")
+    input(type="hidden", name="method", value="PATCH")
+      
+    .field
+      label Description
+      textarea(name="description", style="height: 20em;") #{item.description}
+      
+    .field
+      label YouTube Video ID
+      input(type="text", name="youtube", value="#{item.youtube || ''}")
+
+    button.ui.submit.button(type="submit") Edit &raquo;
+
+block scripts
+  script(src="/js/marked.min.js")
+  script.
+    $('textarea[name=description]').keyup( renderPreview );
+    
+    function renderPreview() {
+      var value = this.value;
+      var rendered = marked( value );
+      $('.preview').html( rendered );
+    }
