@@ -79,7 +79,8 @@ Recording.post('query', function(next, done) {
   Show.Model.populate( recordings , {
     path: '_show'
   }, function(err, populatedRecordings) {
-    next( err , populatedRecordings );
+    if (err) return done(err);
+    return next( null , populatedRecordings );
   });
 });
 
