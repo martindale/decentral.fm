@@ -37,8 +37,6 @@ var Show = decentral.define('Show', {
   icon: 'unmute'
 });
 
-console.log( Credit );
-
 var Recording = decentral.define('Recording', {
   attributes: {
     _show:    { type: ObjectId , ref: 'Show', required: false , alias: 'show' },
@@ -155,7 +153,8 @@ var Person = decentral.define('Person', {
       family: { type: String , max: 70 }
     },
     username: { type: String , max: 35 , slug: true },
-    password: { type: String , max: 70 , masked: true }
+    password: { type: String , max: 70 , masked: true },
+    bio: { type: String , max: 240 }
   },
   virtuals: {
     'name.full': function() {
