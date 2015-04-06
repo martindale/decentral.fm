@@ -163,6 +163,22 @@ decentral.serve(['http']).start(function() {
     return res.render('about');
   });
   
+  // TODO: internalize to maki, provide sane defaults
+  decentral.app.get('/recordings/:recordingSlug/edit', function(req, res, next) {
+    Recording.get({ slug: req.param('recordingSlug') }, function(err, recording) {
+      return res.render('recording-edit', {
+        item: recording
+      });
+    });
+  });
+  
+  decentral.app.post('/recordings/:recordingSlug', function(req, res, next) {
+    Recording.update({ slug: req.param('recordingSlug') }, req.body , function(err, recording) {
+      req.flash('success', 'Content edited successfully!');
+      return res.redirect('/recordings/' + req.param('recordingSlug'));
+    });
+  });
+  
   decentral.app.get('/search', function(req, res, next) {
     Show.query({}, function(err, shows) {
       return res.send({
