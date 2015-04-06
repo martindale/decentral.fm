@@ -31,8 +31,7 @@ var Show = decentral.define('Show', {
     name:    { type: String , max: 35 , required: true , slug: true },
     created: { type: Date , default: Date.now , required: true },
     description: { type: String },
-    hosts:     [ Credit.Schema ],
-    producers: [ Credit.Schema ],
+    credits:     [ Credit.Schema ],
     donations: {
       type: { type: String , enum: ['bitcoin'] },
       destination: { type: String , max: 35 }
