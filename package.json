@@ -19,7 +19,7 @@
   "dependencies": {
     "magnet-uri": "^4.2.0",
     "maki": "git://github.com/martindale/maki",
-    "maki-passport-local": "git://github.com/martindale/maki-passport-local#master",
+    "maki-passport-local": "0.0.2",
     "moment": "^2.8.4",
     "node-torrent-stream": "git://github.com/martindale/node-torrent-stream#decentral.fm",
     "read-torrent": "^1.2.0"
