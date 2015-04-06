@@ -1,0 +1,13 @@
+extends ../node_modules/maki/views/layouts/default
+
+block content
+  .ui.feed
+    for item in recordings
+      .event
+        .content
+          .summary
+            a.user(href="/shows/#{item._show.slug}") #{item._show.name}
+            |  published 
+            a(href="/recordings/#{item.slug}") #{item.title}
+            abbr.date.tooltipped(title="#{ moment( item.released ).format('MMMM Do YYYY, h:mm:ss a') }") #{ moment( item.released ).fromNow() }
+          .extra.text(style="max-width: none;") !{ (item.description) ? markdown( item.description.split('\n\n')[0] ) : '' }
