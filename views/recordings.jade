@@ -11,3 +11,8 @@ block content
             a(href="/recordings/#{item.slug}") #{item.title}
             abbr.date.tooltipped(title="#{ moment( item.released ).format('MMMM Do YYYY, h:mm:ss a') }") #{ moment( item.released ).fromNow() }
           .extra.text(style="max-width: none;") !{ (item.description) ? markdown( item.description.split('\n\n')[0] ) : '' }
+          .meta
+            if (user && user.can('edit', item))
+              a.ui.button(href="/recordings/#{item.slug}")
+                i.edit.icon
+                | edit

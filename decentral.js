@@ -9,6 +9,9 @@ var ObjectId = Schema.Types.ObjectId;
 var Passport = require('maki-passport-local');
 var passport = new Passport({ resource: 'Person' });
 
+var Context = require('./lib/Context');
+var context = new Context();
+
 var Torrent = require('node-torrent-stream');
 var readTorrent = require('read-torrent');
 var magnet = require('magnet-uri');
@@ -17,6 +20,7 @@ var crypto = require('crypto');
 var stream = require('stream');
 
 decentral.use( passport );
+decentral.use( context );
 
 var Credit = new decentral.mongoose.Schema({
   _person: { type: ObjectId , ref: 'Person', required: true },
@@ -164,7 +168,7 @@ var Person = decentral.define('Person', {
   icon: 'user'
 });
 
-decentral.serve(['http']).start(function() {
+decentral.start(function() {
   
   decentral.app.get('/about', function(req, res, next) {
     return res.render('about');
