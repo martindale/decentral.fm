@@ -13,6 +13,6 @@ block content
           .extra.text(style="max-width: none;") !{ (item.description) ? markdown( item.description.split('\n\n')[0] ) : '' }
           .meta
             if (user && user.can('edit', item))
-              a.ui.button(href="/recordings/#{item.slug}")
+              a.ui.button(href="/recordings/#{item.slug}/edit")
                 i.edit.icon
                 | edit
