@@ -138,6 +138,8 @@ Recording.pre('create', function(next, done) {
   var db = decentral.datastore.mongoose.connections[0].db;
   var files = db.collection('fs.files');
   files.findOne({ _id: recording.media }, function(err, thing) {
+    if (err) return done(err);
+    
     return Checksum.create({
       filename: thing.filename,
       _file: thing._id,
