@@ -11,7 +11,11 @@ block content
   
   form.ui.form(action="/recordings/#{item.slug}", method="POST")
     input(type="hidden", name="method", value="PATCH")
-      
+    
+    .field
+      label Title
+      input(type="text", name="title", value="#{item.title}")
+    
     .field
       label Description
       textarea(name="description", style="height: 20em;") #{item.description}
