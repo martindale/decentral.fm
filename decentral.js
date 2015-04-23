@@ -179,16 +179,28 @@ decentral.start(function() {
   // TODO: internalize to maki, provide sane defaults
   decentral.app.get('/recordings/:recordingSlug/edit', function(req, res, next) {
     Recording.get({ slug: req.param('recordingSlug') }, function(err, recording) {
-      return res.render('recording-edit', {
-        item: recording
+      Show.Model.populate(recording, {
+        path: '_show'
+      }, function(err, recording) {
+        if (!req.user) return res.error(404);
+        if (!req.user.can('edit', recording)) return res.error(404);
+        return res.render('recording-edit', {
+          item: recording
+        });
       });
     });
   });
   
   decentral.app.post('/recordings/:recordingSlug', function(req, res, next) {
     Recording.update({ slug: req.param('recordingSlug') }, req.body , function(err, recording) {
-      req.flash('success', 'Content edited successfully!');
-      return res.redirect('/recordings/' + req.param('recordingSlug'));
+      Show.Model.populate(recording, {
+        path: '_show'
+      }, function(err, recording) {
+        if (!req.user) return res.error(404);
+        if (!req.user.can('edit', recording)) return res.error(404);
+        req.flash('success', 'Content edited successfully!');
+        return res.redirect('/recordings/' + req.param('recordingSlug'));
+      });
     });
   });
   
