@@ -56,8 +56,9 @@ var Recording = decentral.define('Recording', {
     description: { type: String , format: 'markdown' },
     hash: { type: String , max: 32 , render: { create: false } },
     credits:  [ Credit ],
-    // TODO: remove this in favor of a "Sources" object
-    youtube: { type: String }
+    // TODO: remove these in favor of a "Sources" object
+    youtube: { type: String },
+    soundcloud: { type: String },
   },
   icon: 'sound'
 });
