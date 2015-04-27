@@ -186,7 +186,8 @@ var Person = decentral.define('Person', {
     'Recording': {
       filter: function() { 
         return { 'credits._person': this._id };
-      }
+      },
+      populate: 'credits._person'
     }
   },
   icon: 'user'

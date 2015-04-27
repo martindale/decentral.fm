@@ -1,12 +1,12 @@
 .event
   .content
     .summary
-      a.user(href="/") #{config.service.name}
+      a.user(href="/shows/#{item._show.slug}") #{item._show.name}
       |  published 
       a(href="/recordings/#{item.slug}") #{item.title}
       abbr.date.tooltipped(title="#{ moment( item.released ).format('MMMM Do YYYY, h:mm:ss a') }") #{ moment( item.released ).fromNow() }
-      if (item.youtube)
-        a.ui.label(href="https://www.youtube.com/watch?v=#{item.youtube}")
-          i.youtube.icon
-          | video interview!
     .extra.text(style="max-width: none;") !{ (item.description) ? markdown( item.description.split('\n\n')[0] ) : '' }
+    each credit in item.credits
+      a.ui.button.attached.right(href="/people/#{credit._person.slug}")
+        i.user.icon
+        | #{credit._person.username}
