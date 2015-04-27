@@ -38,6 +38,13 @@ var Show = decentral.define('Show', {
       destination: { type: String , max: 35 }
     }
   },
+  requires: {
+    'Recording': {
+      filter: function() {
+        return { _show: this._id };
+      }
+    }
+  },
   icon: 'unmute'
 });
 
@@ -153,6 +160,12 @@ Recording.pre('create', function(next, done) {
   });
 });
 
+var Profile = new decentral.mongoose.Schema({
+  id: { type: String , required: true },
+  type: { type: String , enum: ['twitter'] , required: true }
+});
+
+
 var Person = decentral.define('Person', {
   attributes: {
     name: {
@@ -161,11 +174,19 @@ var Person = decentral.define('Person', {
     },
     username: { type: String , max: 35 , slug: true },
     password: { type: String , max: 70 , masked: true },
-    bio: { type: String , max: 240 }
+    bio: { type: String , max: 240 },
+    profiles: [ Profile ]
   },
   virtuals: {
     'name.full': function() {
       return [ this.name.given , this.name.family ].join(' ');
+    }
+  },
+  requires: {
+    'Recording': {
+      filter: function() { 
+        return { 'credits._person': this._id };
+      }
     }
   },
   icon: 'user'

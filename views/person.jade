@@ -1,0 +1,12 @@
+extends ../node_modules/maki/views/layouts/default
+
+block content
+  h2 #{person.username}
+    |  
+    small #{person.name.full}
+  p #{person.bio}
+
+  h3 Appears in...
+  .ui.feed
+    each recording in recordings
+      include partials/recording

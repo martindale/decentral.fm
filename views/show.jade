@@ -1,0 +1,12 @@
+extends ../node_modules/maki/views/layouts/default
+
+block content
+  h2 #{show.name}
+  p #{show.description}
+  
+  
+  h3 Recordings
+  .ui.feed
+    each recording in recordings
+      - var item = recording
+      include partials/recording
