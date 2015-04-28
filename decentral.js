@@ -162,7 +162,10 @@ Recording.pre('create', function(next, done) {
 
 var Profile = new decentral.mongoose.Schema({
   id: { type: String , required: true },
-  type: { type: String , enum: ['twitter'] , required: true }
+  type: { type: String , enum: [
+    'twitter',
+    'github'
+  ], required: true }
 });
 
 
@@ -174,7 +177,7 @@ var Person = decentral.define('Person', {
     },
     username: { type: String , max: 35 , slug: true },
     password: { type: String , max: 70 , masked: true },
-    bio: { type: String , max: 240 },
+    bio: { type: String , max: 1024 },
     profiles: [ Profile ]
   },
   virtuals: {
