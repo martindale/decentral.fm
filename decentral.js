@@ -70,6 +70,15 @@ var Recording = decentral.define('Recording', {
   icon: 'sound'
 });
 
+var Source = decentral.define('Source', {
+  attributes: {
+    id: { type: String , max: 200 },
+    type: { type: String , max: 200 },
+    uri: { type: String , max: 239 } // temporary limit
+  },
+  icon: 'cloud'
+});
+
 var Checksum = decentral.define('Checksum', {
   attributes: {
     filename: { type: String },
