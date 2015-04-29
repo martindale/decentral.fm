@@ -52,6 +52,7 @@ var Recording = decentral.define('Recording', {
   attributes: {
     _show:    { type: ObjectId , ref: 'Show', required: false , alias: 'show' },
     title:    { type: String , max: 35 , required: true , slug: true },
+    subtitle: { type: String , max: 200 },
     media:    { type: 'File', required: true },
     torrent:  { type: ObjectId , render: { create: false } },
     magnet:   { type: String , max: 24 , render: { create: false } },
