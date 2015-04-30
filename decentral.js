@@ -71,6 +71,11 @@ var Recording = decentral.define('Recording', {
   icon: 'sound'
 });
 
+Recording.on('query', function(next, done) {
+  // TODO: evaluate a good strategy for subtitles?
+  // if (!this.subtitle && this.title) this.subtitle = this.title;
+});
+
 var Source = decentral.define('Source', {
   attributes: {
     id: { type: String , max: 200 },
