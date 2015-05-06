@@ -15,6 +15,7 @@ var context = new Context();
 var Torrent = require('node-torrent-stream');
 var readTorrent = require('read-torrent');
 var magnet = require('magnet-uri');
+var metadata = require('musicmetadata');
 
 var crypto = require('crypto');
 var stream = require('stream');
@@ -58,7 +59,8 @@ var Recording = decentral.define('Recording', {
     magnet:   { type: String , max: 24 , render: { create: false } },
     type:     { type: String , max: 5 , render: { create: false } },
     filename: { type: String , max: 255 , render: { create: false } },
-    size:   { type: Number , render: { create: false } },
+    size:     { type: Number , render: { create: false } },
+    duration: { type: Number , render: { create: false } },
     recorded: { type: Date },
     released: { type: Date , default: Date.now , required: true },
     description: { type: String , format: 'markdown' },
@@ -152,6 +154,19 @@ Recording.on('file:media', function(media) {
   torrent.pipe( torrentstore );
   file.pipe( torrent );
 
+  metadata( file , {
+    duration: true
+  }, function(err, data) {
+    Recording.patch({
+      _id: media.metadata.document
+    }, [
+      { op: 'add', path: '/duration' , value: data.duration },
+    ], function(err, num) {
+      if (err) console.error( err );
+      console.log('all done,', num , 'affected');
+    });
+  });
+
 });
 
 Recording.pre('create', function(next, done) {
@@ -162,7 +177,7 @@ Recording.pre('create', function(next, done) {
   var files = db.collection('fs.files');
   files.findOne({ _id: recording.media }, function(err, thing) {
     if (err) return done(err);
-    
+
     return Checksum.create({
       filename: thing.filename,
       _file: thing._id,
@@ -202,7 +217,7 @@ var Person = decentral.define('Person', {
   },
   requires: {
     'Recording': {
-      filter: function() { 
+      filter: function() {
         return { 'credits._person': this._id };
       },
       populate: 'credits._person'
@@ -212,11 +227,11 @@ var Person = decentral.define('Person', {
 });
 
 decentral.start(function() {
-  
+
   decentral.app.get('/about', function(req, res, next) {
     return res.render('about');
   });
-  
+
   // TODO: internalize to maki, provide sane defaults
   decentral.app.get('/recordings/:recordingSlug/edit', function(req, res, next) {
     Recording.get({ slug: req.param('recordingSlug') }, function(err, recording) {
@@ -231,7 +246,7 @@ decentral.start(function() {
       });
     });
   });
-  
+
   decentral.app.post('/recordings/:recordingSlug', function(req, res, next) {
     Recording.update({ slug: req.param('recordingSlug') }, req.body , function(err, recording) {
       Show.Model.populate(recording, {
@@ -244,7 +259,7 @@ decentral.start(function() {
       });
     });
   });
-  
+
   decentral.app.get('/search', function(req, res, next) {
     Show.query({}, function(err, shows) {
       return res.send({
