@@ -1,0 +1,21 @@
+extends ../node_modules/maki/views/layouts/default
+
+block content
+  .ui.feed
+    .event(data-id="#{recording._id}")
+      .content
+        .summary
+          a.user(href="/shows/#{recording._show.slug}") #{recording._show.name}
+          |  published 
+          a(href="/recordings/#{recording.slug}") #{recording.title}
+          abbr.date.tooltipped(title="#{ moment( recording.released ).format('MMMM Do YYYY, h:mm:ss a') }") #{ moment( recording.released ).fromNow() }
+        .extra.text(style="max-width: none;") !{ (recording.description) ? markdown( recording.description.split('\n\n')[0] ) : '' }
+        .meta
+          if (user && user.can('edit', recording))
+            a.ui.button(href="/recordings/#{recording.slug}/edit")
+              i.edit.icon
+              | edit
+          if (user && user.can('delete', recording))
+            .ui.button(href="/recordings/#{recording.slug}/edit", data-action="remove-item")
+              i.edit.icon
+              | delete

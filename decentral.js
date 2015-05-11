@@ -50,9 +50,10 @@ var Show = decentral.define('Show', {
 
 var Recording = decentral.define('Recording', {
   attributes: {
-    _show:    { type: ObjectId , ref: 'Show', required: false , alias: 'show' },
+    _show:    { type: ObjectId , ref: 'Show', required: false , alias: 'show', populate: ['get'] },
     title:    { type: String , max: 35 , required: true , slug: true },
     subtitle: { type: String , max: 200 },
+    slug:     { type: String , required: true },
     media:    { type: 'File', required: true },
     torrent:  { type: ObjectId , render: { create: false } },
     magnet:   { type: String , max: 24 , render: { create: false } },
@@ -162,7 +163,7 @@ Recording.pre('create', function(next, done) {
   var files = db.collection('fs.files');
   files.findOne({ _id: recording.media }, function(err, thing) {
     if (err) return done(err);
-    
+
     return Checksum.create({
       filename: thing.filename,
       _file: thing._id,
@@ -183,7 +184,6 @@ var Profile = new decentral.mongoose.Schema({
   ], required: true }
 });
 
-
 var Person = decentral.define('Person', {
   attributes: {
     name: {
@@ -202,7 +202,7 @@ var Person = decentral.define('Person', {
   },
   requires: {
     'Recording': {
-      filter: function() { 
+      filter: function() {
         return { 'credits._person': this._id };
       },
       populate: 'credits._person'
@@ -212,11 +212,11 @@ var Person = decentral.define('Person', {
 });
 
 decentral.start(function() {
-  
+
   decentral.app.get('/about', function(req, res, next) {
     return res.render('about');
   });
-  
+
   // TODO: internalize to maki, provide sane defaults
   decentral.app.get('/recordings/:recordingSlug/edit', function(req, res, next) {
     Recording.get({ slug: req.param('recordingSlug') }, function(err, recording) {
@@ -231,7 +231,7 @@ decentral.start(function() {
       });
     });
   });
-  
+
   decentral.app.post('/recordings/:recordingSlug', function(req, res, next) {
     Recording.update({ slug: req.param('recordingSlug') }, req.body , function(err, recording) {
       Show.Model.populate(recording, {
@@ -244,7 +244,7 @@ decentral.start(function() {
       });
     });
   });
-  
+
   decentral.app.get('/search', function(req, res, next) {
     Show.query({}, function(err, shows) {
       return res.send({
