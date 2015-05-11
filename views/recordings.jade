@@ -3,7 +3,7 @@ extends ../node_modules/maki/views/layouts/default
 block content
   .ui.feed
     for item in recordings
-      .event
+      .event(data-id="#{item._id}")
         .content
           .summary
             a.user(href="/shows/#{item._show.slug}") #{item._show.name}
@@ -16,3 +16,75 @@ block content
               a.ui.button(href="/recordings/#{item.slug}/edit")
                 i.edit.icon
                 | edit
+            if (user && user.can('delete', item))
+              .ui.button(href="/recordings/#{item.slug}/edit", data-action="remove-item")
+                i.edit.icon
+                | delete
+
+  if (user)
+    form.ui.form.segment(action="/recordings", method="post", enctype="multipart/form-data")
+      .field.required
+        label Show
+        .ui.category.search.icon.input(data-field-name="_show")
+          i.search.icon
+          //- TODO: lookup for artificial fields!
+          //-input.prompt(type="text", name="#{field}", placeholder="Look for #{ resources[ f._ref ].collection }...")
+          input.prompt(type="text", name="_show", placeholder="Look for...", value="5514d2b013c23ded202a2380")
+          .results
+      .field.required
+        label Title
+        input(type="text", name="title", required)
+      .field.required
+        label Slug
+        input(type="text", name="slug", required)
+      .field
+        label Content
+        input(type="file", name="media")
+      .field
+        label Description
+        textarea(name="description")
+
+      .preview
+
+      button.ui.blue.submit.button(type="submit") Create &raquo;
+
+block scripts
+  script(src="/js/marked.min.js")
+  script(src="/js/speakingurl.min.js")
+  script.
+    $(document).on('click', '*[data-action=remove-item]', function(e) {
+      e.preventDefault();
+      
+      if (!confirm('Are you sure you want to delete this?')) return;
+      
+      // TODO: only remove item when socket event received!
+      var $item = $( this ).parent().parent().parent();
+      console.log( $item );
+      $.ajax({ method: 'delete', url: '/recordings/' + $item.data('id') , success: function(data) {
+        $item.slideUp('slow', function() {
+          $item.remove();
+        });
+      } });
+      
+      return false;
+    });
+    
+    $('input[name=title]').keyup( renderSlug );
+    $('input[name=slug]').keyup( markTouched );
+    $('textarea[name=description]').keyup( renderPreview );
+
+    function markTouched() {
+      $(this).addClass('touched');
+    }
+
+    function renderSlug() {
+      var value = this.value;
+      var slug = getSlug( value );
+      $('input[name=slug]:not(.touched)').val( slug );
+    }
+    
+    function renderPreview() {
+      var value = this.value;
+      var rendered = marked( value );
+      $('.preview').html( rendered );
+    }

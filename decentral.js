@@ -51,9 +51,10 @@ var Show = decentral.define('Show', {
 
 var Recording = decentral.define('Recording', {
   attributes: {
-    _show:    { type: ObjectId , ref: 'Show', required: false , alias: 'show' },
+    _show:    { type: ObjectId , ref: 'Show', required: false , alias: 'show', populate: ['get'] },
     title:    { type: String , max: 35 , required: true , slug: true },
     subtitle: { type: String , max: 200 },
+    slug:     { type: String , required: true },
     media:    { type: 'File', required: true },
     torrent:  { type: ObjectId , render: { create: false } },
     magnet:   { type: String , max: 24 , render: { create: false } },
@@ -157,13 +158,15 @@ Recording.on('file:media', function(media) {
   metadata( file , {
     duration: true
   }, function(err, data) {
+    if (err || !data) return console.error(err || 'no data object');
+
     Recording.patch({
       _id: media.metadata.document
     }, [
       { op: 'add', path: '/duration' , value: data.duration },
     ], function(err, num) {
-      if (err) console.error( err );
-      console.log('all done,', num , 'affected');
+      if (err) console.error('duration patch err:', err );
+      console.log('duration updated,', num , 'affected');
     });
   });
 
@@ -197,7 +200,6 @@ var Profile = new decentral.mongoose.Schema({
     'github'
   ], required: true }
 });
-
 
 var Person = decentral.define('Person', {
   attributes: {
