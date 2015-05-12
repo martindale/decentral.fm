@@ -15,6 +15,7 @@ var context = new Context();
 var Torrent = require('node-torrent-stream');
 var readTorrent = require('read-torrent');
 var magnet = require('magnet-uri');
+var metadata = require('musicmetadata');
 
 var crypto = require('crypto');
 var stream = require('stream');
@@ -59,7 +60,8 @@ var Recording = decentral.define('Recording', {
     magnet:   { type: String , max: 24 , render: { create: false } },
     type:     { type: String , max: 5 , render: { create: false } },
     filename: { type: String , max: 255 , render: { create: false } },
-    size:   { type: Number , render: { create: false } },
+    size:     { type: Number , render: { create: false } },
+    duration: { type: Number , render: { create: false } },
     recorded: { type: Date },
     released: { type: Date , default: Date.now , required: true },
     description: { type: String , format: 'markdown' },
@@ -152,6 +154,21 @@ Recording.on('file:media', function(media) {
 
   torrent.pipe( torrentstore );
   file.pipe( torrent );
+
+  metadata( file , {
+    duration: true
+  }, function(err, data) {
+    if (err || !data) return console.error(err || 'no data object');
+
+    Recording.patch({
+      _id: media.metadata.document
+    }, [
+      { op: 'add', path: '/duration' , value: data.duration },
+    ], function(err, num) {
+      if (err) console.error('duration patch err:', err );
+      console.log('duration updated,', num , 'affected');
+    });
+  });
 
 });
 
