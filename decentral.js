@@ -134,6 +134,7 @@ Recording.on('file:media', function(media) {
     console.log('error!' , data );
   });
   torrentstore.on('close', function( torrentFile ) {
+    // TODO: point this at a local stream read
     readTorrent('http://localhost:15005/files/' + torrentFile._id , function(err, parsed) {
       if (err) console.error( err );
       var magnetURI = magnet.encode( parsed );
