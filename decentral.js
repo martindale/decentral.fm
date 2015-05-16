@@ -109,6 +109,10 @@ Recording.post('query', function(next, done) {
 });
 
 Recording.on('file:media', function(media) {
+
+});
+
+/* Recording.on('file:media', function(media) {
   console.log('received media:', media);
 
   var torrent = new Torrent({
@@ -154,7 +158,7 @@ Recording.on('file:media', function(media) {
   torrent.pipe( torrentstore );
   file.pipe( torrent );
 
-});
+}); */
 
 Recording.pre('create', function(next, done) {
   var recording = this;
@@ -213,6 +217,10 @@ var Person = decentral.define('Person', {
 });
 
 decentral.start(function() {
+  var mediaID = '55513574fda0504b5d5e7fac';
+  var file = decentral.datastore.gfs.createReadStream({
+    _id: mediaID
+  });
 
   decentral.app.get('/about', function(req, res, next) {
     return res.render('about');
