@@ -109,10 +109,6 @@ Recording.post('query', function(next, done) {
 });
 
 Recording.on('file:media', function(media) {
-
-});
-
-/* Recording.on('file:media', function(media) {
   console.log('received media:', media);
 
   var torrent = new Torrent({
@@ -158,7 +154,7 @@ Recording.on('file:media', function(media) {
   torrent.pipe( torrentstore );
   file.pipe( torrent );
 
-}); */
+});
 
 Recording.pre('create', function(next, done) {
   var recording = this;
