@@ -109,10 +109,82 @@ Recording.post('query', function(next, done) {
 });
 
 Recording.on('file:media', function(media) {
+  var fs = require('fs');
+  var http = require('http');
 
+  var file = decentral.datastore.gfs.createReadStream({
+    _id: media._id
+  });
+  //file.pause();
+  var bufs = [];
+  file.on('data', function(b) {
+    bufs.push(b);
+  });
+  file.on('end', function() {
+    var buf = Buffer.concat( bufs );
+    var boundaryKey = require('crypto').randomBytes(16).toString('hex');
+
+    var data = {
+      'track[sharing]': 'private',
+      'oauth_token': config.soundcloud.token,
+      'track[title]': media.metadata.document,
+    };
+
+    var body = '--' + boundaryKey + '\r\n';
+    Object.keys( data ).forEach(function(k) {
+      body += 'Content-Disposition: form-data; name="' + k + '"\r\n\r\n';
+      body += data[k] + '\r\n';
+      body += '--' + boundaryKey + '\r\n';
+    });
+
+    console.log('body until now:');
+    console.log( body );
+
+    body += 'Content-Disposition: form-data; name="track[asset_data]"; filename="'+media.filename+'"\r\n\r\n';
+    //body += 'Content-Type: application/octet-stream\r\n\r\n';
+    body += buf.toString('binary'); // THEN we convert to binary?  wtf?
+    body += '\r\n--' + boundaryKey + '--\r\n';
+
+    require('fs').writeFileSync('./'+media.filename+'-generated.mp3', buf.toString('binary'), {
+      encoding: 'binary'
+    });
+
+    var request = http.request({
+      host: 'api.soundcloud.com',
+      port: 443,
+      path: '/tracks',
+      headers: {
+        'host': 'api.soundcloud.com',
+        'content-length': Buffer.byteLength( body ).toString(),
+        'accept-encoding': 'gzip, deflate',
+        'accept': '*/*',
+        'user-agent': 'SoundCloud Python API Wrapper 0.4.1',
+        'content-type': 'multipart/form-data; boundary=' + boundaryKey
+      }
+    }, function(res) {
+      console.log('finally!');
+      console.log(res.req._headers);
+      console.log(res.statusCode);
+      console.log(res.headers);
+      res.on('data', function(chunk) {
+        console.log('chunk:', chunk.toString());
+      });
+    });
+
+    request.on('error', function(err) { console.error('request error: ' + err); });
+
+    request.write(body);
+    //request.write( buf.toString('binary') );
+    //request.write('\r\n--' + boundaryKey + '--\r\n');
+    request.end();
+
+  });
+
+  //file.resume({ end: false });
+  file.resume();
 });
 
-/* Recording.on('file:media', function(media) {
+Recording.on('file:media', function(media) {
   console.log('received media:', media);
 
   var torrent = new Torrent({
@@ -158,7 +230,7 @@ Recording.on('file:media', function(media) {
   torrent.pipe( torrentstore );
   file.pipe( torrent );
 
-}); */
+});
 
 Recording.pre('create', function(next, done) {
   var recording = this;
