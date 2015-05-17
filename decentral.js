@@ -289,10 +289,6 @@ var Person = decentral.define('Person', {
 });
 
 decentral.start(function() {
-  var mediaID = '55513574fda0504b5d5e7fac';
-  var file = decentral.datastore.gfs.createReadStream({
-    _id: mediaID
-  });
 
   decentral.app.get('/about', function(req, res, next) {
     return res.render('about');
