@@ -68,12 +68,6 @@ module.exports = {
   sockets: {
       timeout: process.env.MAKI_SOCKETS_TIMEOUT || 30000
   },
-  soundcloud: {
-    id: '98ce66124fabdff2f33beb2f810a0a25',
-    secret: 'de220f61a218a55213cc1f7c0f83d165',
-    token: '1-113304-6832263-13eb675c70dccfc', // only needed temporarily
-    user: '6832263', // only needed temporarily
-  },
   torrents: {
     trackers: [
       'udp://tracker.openbittorrent.com:80',
