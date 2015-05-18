@@ -9,22 +9,37 @@ var ObjectId = Schema.Types.ObjectId;
 var Passport = require('maki-passport-local');
 var passport = new Passport({ resource: 'Person' });
 
+var PassportSoundcloud = require('maki-passport-soundcloud');
+var passportSoundcloud = new PassportSoundcloud({
+  resource: 'Person',
+  path: '/profiles/soundcloud',
+  multi: true
+});
+
 var Context = require('./lib/Context');
 var context = new Context();
 
 var Torrent = require('node-torrent-stream');
 var readTorrent = require('read-torrent');
 var magnet = require('magnet-uri');
+var _ = require('lodash');
 
 var crypto = require('crypto');
 var stream = require('stream');
 
 decentral.use( passport );
+decentral.use( passportSoundcloud );
 decentral.use( context );
 
 var Credit = new decentral.mongoose.Schema({
   _person: { type: ObjectId , ref: 'Person', required: true },
   role: { type: String , enum: ['host', 'producer', 'guest'] , required: true }
+});
+
+var SoundcloudProfile = new decentral.mongoose.Schema({
+  id: { type: String , required: true },
+  username: { type: String },
+  token: { type: String }
 });
 
 var Show = decentral.define('Show', {
@@ -36,6 +51,19 @@ var Show = decentral.define('Show', {
     donations: {
       type: { type: String , enum: ['bitcoin'] },
       destination: { type: String , max: 35 }
+    },
+    settings: {
+      soundcloud: {
+        enabled: { type: Boolean , default: true },
+        token: { type: String }
+      }
+    },
+    profiles: {
+      soundcloud: {
+        id: { type: String },
+        username: { type: String },
+        token: { type: String }
+      }
     }
   },
   requires: {
@@ -43,9 +71,44 @@ var Show = decentral.define('Show', {
       filter: function() {
         return { _show: this._id };
       }
+    },
+    'Person': {
+      // TODO: implement local aliases in Maki
+      alias: 'editors',
+      filter: function() {
+        var self = this;
+        if (!self.credits) self.credits = [];
+        return { _id: { $in: self.credits.map(function(c) {
+          return c._person;
+        }) } }
+      }
     }
   },
   icon: 'unmute'
+});
+
+Show.pre('update', function(next, done) {
+  var params = this;
+  if (!params.profiles || !params.profiles.soundcloud) return next();
+
+  var validObject = mongoose.mongo.BSONPure.ObjectID.isValid( params.profiles.soundcloud );
+
+  if (validObject) {
+    Person.get({ 'profiles.soundcloud._id': params.profiles.soundcloud }, function(err, person) {
+      var soundclouds = person.profiles.soundcloud;
+      var profile = _.find( soundclouds , function(s) {
+        return (s._id.toString() === params.profiles.soundcloud);
+      });
+
+      console.log('profile:',profile);
+      params.profiles.soundcloud = profile;
+
+      next();
+
+    });
+  } else {
+    return done('invalid object in profiles field');
+  }
 });
 
 var Recording = decentral.define('Recording', {
@@ -256,14 +319,6 @@ Recording.pre('create', function(next, done) {
   });
 });
 
-var Profile = new decentral.mongoose.Schema({
-  id: { type: String , required: true },
-  type: { type: String , enum: [
-    'twitter',
-    'github'
-  ], required: true }
-});
-
 var Person = decentral.define('Person', {
   attributes: {
     name: {
@@ -273,7 +328,10 @@ var Person = decentral.define('Person', {
     username: { type: String , max: 35 , slug: true },
     password: { type: String , max: 70 , masked: true },
     bio: { type: String , max: 1024 },
-    profiles: [ Profile ]
+    //profiles: [ Profile ]
+    profiles: {
+      soundcloud: [ SoundcloudProfile ]
+    }
   },
   virtuals: {
     'name.full': function() {

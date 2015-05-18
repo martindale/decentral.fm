@@ -3,10 +3,42 @@ extends ../node_modules/maki/views/layouts/default
 block content
   h2 #{show.name}
   p #{show.description}
-  
-  
+
   h3 Recordings
   .ui.feed
     each recording in recordings
       - var item = recording
       include partials/recording
+
+  //- TODO: improve Context
+  if (user && user.can('manage', { _show: show } ))
+    h3 Publishing
+    h4 Publish to...
+    form.ui.form
+      .field
+        label Soundcloud
+        select.ui.dropdown(name="soundcloud")
+          option(value="null") none (disable publishing)
+          for editor in people
+            for profile in editor.profiles.soundcloud
+              option(value="#{profile._id}") #{profile.username} (from user "#{user.username}")
+
+block scripts
+  script.
+    $(document).on('change', 'select[name=soundcloud]', function(e) {
+      var $self = $(this);
+
+      $.ajax({
+        url: '',
+        type: 'patch',
+        headers: {
+          Accept: 'application/json',
+        },
+        data: {
+          profiles: {
+            soundcloud: $self.val()
+          }
+        }
+      });
+
+    });

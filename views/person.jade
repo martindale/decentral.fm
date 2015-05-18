@@ -6,6 +6,22 @@ block content
     small #{person.name.full}
   p #{person.bio}
 
+  h3 Profiles
+  .ui.buttons
+    if (person.profiles.soundcloud[0])
+      a.ui.button(href="https://soundcloud.com/#{person.profiles.soundcloud[0].username}")
+        i.soundcloud.icon
+        | #{person.profiles.soundcloud[0].username}
+
+    if (user && user._id.toString() == person._id.toString())
+      .ui.floating.icon.dropdown.button
+        .text Link Profile... &nbsp;
+        i.dropdown.icon
+        .menu
+          a.item.ui.button(href="/auth/soundcloud")
+            i.soundcloud.icon
+            | Soundcloud &raquo;
+
   h3 Appears in...
   .ui.feed
     each recording in recordings
