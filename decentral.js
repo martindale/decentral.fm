@@ -100,8 +100,8 @@ Show.pre('update', function(next, done) {
         return (s._id.toString() === params.profiles.soundcloud);
       });
 
-      console.log('profile:',profile);
-      params.profiles.soundcloud = profile;
+      profile.id = profile._id.toString();
+      params.profiles.soundcloud = profile.toObject();
 
       next();
 

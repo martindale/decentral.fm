@@ -21,7 +21,10 @@ block content
           option(value="null") none (disable publishing)
           for editor in people
             for profile in editor.profiles.soundcloud
-              option(value="#{profile._id}") #{profile.username} (from user "#{user.username}")
+              if (show.profiles && show.profiles.soundcloud && show.profiles.soundcloud._id && show.profiles.soundcloud._id.toString() === profile._id.toString())
+                option(value="#{profile._id}", selected) #{profile.username} (from user "#{user.username}")
+              else
+                option(value="#{profile._id}") #{profile.username} (from user "#{user.username}")
 
 block scripts
   script.
