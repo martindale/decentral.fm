@@ -91,8 +91,17 @@ Show.pre('update', function(next, done) {
   var params = this;
   if (!params.profiles || !params.profiles.soundcloud) return next();
 
-  var validObject = mongoose.mongo.BSONPure.ObjectID.isValid( params.profiles.soundcloud );
+  if (params.profiles.soundcloud === 'disable') {
+    params.profiles.soundcloud = {
+      id: null,
+      username: null,
+      token: null
+    };
+    return next();
+  }
 
+
+  var validObject = mongoose.mongo.BSONPure.ObjectID.isValid( params.profiles.soundcloud );
   if (validObject) {
     Person.get({ 'profiles.soundcloud._id': params.profiles.soundcloud }, function(err, person) {
       var soundclouds = person.profiles.soundcloud;
