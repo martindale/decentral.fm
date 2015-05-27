@@ -18,10 +18,13 @@ block content
       .field
         label Soundcloud
         select.ui.dropdown(name="soundcloud")
-          option(value="null") none (disable publishing)
+          if (!show.profiles || !show.profiles.soundcloud || !show.profiles.soundcloud.id)
+            option(value="disable", selected) none (disable publishing)
+          else
+            option(value="disable") none (disable publishing)
           for editor in people
             for profile in editor.profiles.soundcloud
-              if (show.profiles && show.profiles.soundcloud && show.profiles.soundcloud._id && show.profiles.soundcloud._id.toString() === profile._id.toString())
+              if (show.profiles && show.profiles.soundcloud && show.profiles.soundcloud.id && show.profiles.soundcloud.id === profile._id.toString())
                 option(value="#{profile._id}", selected) #{profile.username} (from user "#{user.username}")
               else
                 option(value="#{profile._id}") #{profile.username} (from user "#{user.username}")
