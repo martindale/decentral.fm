@@ -395,11 +395,17 @@ decentral.start(function() {
   decentral.app.get('/search', function(req, res, next) {
     Show.query({}, function(err, shows) {
       return res.send({
-        results: shows.map(function(x) {
-          return {
-            title: x.name
+        results: {
+          shows: {
+            name: 'Shows',
+            results: shows.map(function(x) {
+              return {
+                id: 'foo' || x._id,
+                title: x.name
+              }
+            })
           }
-        })
+        }
       });
     });
   });
