@@ -205,52 +205,53 @@ Recording.on('file:media', function(media) {
         bufs.push(b);
       });
       file.on('end', function() {
-        var buf = Buffer.concat( bufs );
-        var boundaryKey = require('crypto').randomBytes(16).toString('hex');
+        Show.get({ _id: recording._show }, function(err, show) {
+          var buf = Buffer.concat( bufs );
+          var boundaryKey = require('crypto').randomBytes(16).toString('hex');
 
-        var data = {
-          'track[sharing]': 'private',
-          'oauth_token': config.soundcloud.token,
-          'track[title]': recording.title,
-        };
+          var data = {
+            'track[sharing]': 'private',
+            'oauth_token': show.profiles.soundcloud.token,
+            'track[title]': recording.title,
+          };
 
-        var body = '--' + boundaryKey + '\r\n';
-        Object.keys( data ).forEach(function(k) {
-          body += 'Content-Disposition: form-data; name="' + k + '"\r\n\r\n';
-          body += data[k] + '\r\n';
-          body += '--' + boundaryKey + '\r\n';
+          var body = '--' + boundaryKey + '\r\n';
+          Object.keys( data ).forEach(function(k) {
+            body += 'Content-Disposition: form-data; name="' + k + '"\r\n\r\n';
+            body += data[k] + '\r\n';
+            body += '--' + boundaryKey + '\r\n';
+          });
+
+          body += 'Content-Disposition: form-data; name="track[asset_data]"; filename="'+media.filename+'"\r\n\r\n';
+          //body += 'Content-Type: application/octet-stream\r\n\r\n';
+          body += buf.toString('binary'); // THEN we convert to binary?  wtf?
+          body += '\r\n--' + boundaryKey + '--\r\n';
+
+          var request = http.request({
+            host: 'api.soundcloud.com',
+            port: 443,
+            path: '/tracks',
+            method: 'POST',
+            headers: {
+              'host': 'api.soundcloud.com',
+              'content-length': Buffer.byteLength( body ).toString(),
+              'accept-encoding': 'gzip, deflate',
+              'accept': '*/*',
+              'user-agent': 'SoundCloud Python API Wrapper 0.4.1',
+              'content-type': 'multipart/form-data; boundary=' + boundaryKey
+            }
+          }, function(res) {
+            console.log('finally!');
+            console.log(res.req._headers);
+            console.log(res.statusCode);
+            console.log('soundcloud creation:', res.statusCode , res.headers);
+          });
+
+          request.on('error', function(err) { console.error('request error: ' + err); });
+
+          request.write(body);
+          request.end();
         });
-
-        body += 'Content-Disposition: form-data; name="track[asset_data]"; filename="'+media.filename+'"\r\n\r\n';
-        //body += 'Content-Type: application/octet-stream\r\n\r\n';
-        body += buf.toString('binary'); // THEN we convert to binary?  wtf?
-        body += '\r\n--' + boundaryKey + '--\r\n';
-
-        var request = http.request({
-          host: 'api.soundcloud.com',
-          port: 443,
-          path: '/tracks',
-          method: 'POST',
-          headers: {
-            'host': 'api.soundcloud.com',
-            'content-length': Buffer.byteLength( body ).toString(),
-            'accept-encoding': 'gzip, deflate',
-            'accept': '*/*',
-            'user-agent': 'SoundCloud Python API Wrapper 0.4.1',
-            'content-type': 'multipart/form-data; boundary=' + boundaryKey
-          }
-        }, function(res) {
-          console.log('finally!');
-          console.log(res.req._headers);
-          console.log(res.statusCode);
-          console.log('soundcloud creation:', res.statusCode , res.headers);
-        });
-
-        request.on('error', function(err) { console.error('request error: ' + err); });
-
-        request.write(body);
-        request.end();
-
       });
 
       //file.resume({ end: false });
