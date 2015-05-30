@@ -210,9 +210,10 @@ Recording.on('file:media', function(media) {
           var boundaryKey = require('crypto').randomBytes(16).toString('hex');
 
           var data = {
-            'track[sharing]': 'private',
+            'track[sharing]': 'public',
             'oauth_token': show.profiles.soundcloud.token,
             'track[title]': recording.title,
+            'track[description]': recording.description
           };
 
           var body = '--' + boundaryKey + '\r\n';
