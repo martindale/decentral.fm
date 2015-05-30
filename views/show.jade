@@ -25,9 +25,9 @@ block content
           for editor in people
             for profile in editor.profiles.soundcloud
               if (show.profiles && show.profiles.soundcloud && show.profiles.soundcloud.id && show.profiles.soundcloud.id === profile._id.toString())
-                option(value="#{profile._id}", selected) #{profile.username} (from user "#{user.username}")
+                option(value="#{profile._id}", selected) #{profile.username} (from user "#{editor.username}")
               else
-                option(value="#{profile._id}") #{profile.username} (from user "#{user.username}")
+                option(value="#{profile._id}") #{profile.username} (from user "#{editor.username}")
 
 block scripts
   script.
