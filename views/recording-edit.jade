@@ -21,6 +21,48 @@ block content
       textarea(name="description", style="height: 20em;") #{item.description}
       
     .field
+      label Guests
+      .ui.fluid.multiple.search.selection.dropdown
+        input(type="hidden", name="guests")
+        i.dropdown.icon
+        .default.text Select guests...
+        .menu
+          for person in people
+            .item(data-value="#{person._id}") #{person.username}
+
+    .field
+      label Hosts
+      .ui.fluid.multiple.search.selection.dropdown
+        input(type="hidden", name="hosts")
+        i.dropdown.icon
+        .default.text Select hosts...
+        .menu
+          for person in people
+            .item(data-value="#{person._id}") #{person.username}
+      
+
+    .field
+      label Producers
+      .ui.fluid.multiple.search.selection.dropdown
+        input(type="hidden", name="producers")
+        i.dropdown.icon
+        .default.text Select producers...
+        .menu
+          for person in people
+            .item(data-value="#{person._id}") #{person.username}
+      
+
+    .field
+      label Credits
+      .ui.fluid.multiple.search.selection.dropdown
+        input(type="hidden", name="producers")
+        i.dropdown.icon
+        .default.text Select credits...
+        .menu
+          for person in people
+            .item(data-value="#{person._id}") #{person.username}
+      
+    .field
       label YouTube Video ID
       input(type="text", name="youtube", value="#{item.youtube || ''}")
 
@@ -40,3 +82,18 @@ block scripts
       var rendered = marked( value );
       $('.preview').html( rendered );
     }
+
+    $('.ui.search')
+      .search({
+        apiSettings: {
+          url: '/search?q={query}'
+        },
+        type: 'category'
+      })
+    ;
+    
+    $('.ui.multiple.search.dropdown')
+      .dropdown({
+        allowAdditions: true
+      })
+    ;
