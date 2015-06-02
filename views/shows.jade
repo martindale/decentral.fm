@@ -1,0 +1,16 @@
+extends ../node_modules/maki/views/layouts/default
+
+block content
+  h2 Shows
+  
+  for show in shows
+    .ui.top.attached.segment
+      h3
+        a(href="/shows/#{show.slug}") #{show.name}
+    .ui.attached.segment
+      p #{show.description}
+    .ui.buttons.bottom.attached.segment
+      a.ui.button(href="/shows/#{show.slug}") View &raquo;
+      if (show.website)
+        a.ui.button(href="#{show.website}") Website
+          i.external.icon
