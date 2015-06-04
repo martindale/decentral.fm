@@ -102,7 +102,6 @@ Show.pre('update', function(next, done) {
     return next();
   }
 
-
   var validObject = mongoose.mongo.BSONPure.ObjectID.isValid( params.profiles.soundcloud );
   if (validObject) {
     Person.get({ 'profiles.soundcloud._id': params.profiles.soundcloud }, function(err, person) {
@@ -184,7 +183,9 @@ Recording.post('query', function(next, done) {
 
 Recording.on('file:media', function(media) {
 
-  setTimeout( findMedia , 2500); // media event happens before document is created
+  // TODO: make this an event listener.
+  // this would totally work in Rethink!
+  setTimeout( findMedia , 10000); // media event happens before document is created
 
   function findMedia() {
     Recording.query({ media: media._id }, function(err, recordings) {
