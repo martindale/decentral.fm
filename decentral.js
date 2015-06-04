@@ -374,8 +374,11 @@ decentral.start(function() {
       }, function(err, recording) {
         if (!req.user) return res.error(404);
         if (!req.user.can('edit', recording)) return res.error(404);
-        return res.render('recording-edit', {
-          item: recording
+        Person.query({}, function(err, people) {
+          return res.render('recording-edit', {
+            item: recording,
+            people: people
+          });
         });
       });
     });
