@@ -19,14 +19,15 @@ block content
     .field
       label Description
       textarea(name="description", style="height: 20em;") #{item.description}
-      
-    .field
-      label YouTube Video ID
-      input(type="text", name="youtube", value="#{item.youtube || ''}")
+    
+    .two.fields
+      .field
+        label YouTube Video ID
+        input(type="text", name="youtube", value="#{item.youtube || ''}")
 
-    .field
-      label Soundcloud ID
-      input(type="text", name="soundcloud", value="#{item.soundcloud || ''}")
+      .field
+        label Soundcloud ID
+        input(type="text", name="soundcloud", value="#{item.soundcloud || ''}")
 
     button.ui.submit.button(type="submit") Edit &raquo;
 
