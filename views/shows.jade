@@ -18,7 +18,7 @@ block content
   if (user)
     h3 Create a Show
     
-    form.ui.form.segment
+    form.ui.form.segment(method="post")
       input(type="hidden", name="creator", value="#{user._id}")
 
       .field.required
