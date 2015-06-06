@@ -171,6 +171,15 @@ var Checksum = decentral.define('Checksum', {
   icon: 'lock'
 });
 
+var Comment = decentral.define('Comment', {
+  attributes: {
+    _author: { type: ObjectId , ref: 'Person' , required: true },
+    created: { type: Date , default: Date.now , required: true },
+    message: { type: String , required: true }
+  },
+  icon: 'comment'
+});
+
 Recording.post('query', function(next, done) {
   var recordings = this;
   Show.Model.populate( recordings , {
