@@ -174,6 +174,7 @@ var Checksum = decentral.define('Checksum', {
 var Comment = decentral.define('Comment', {
   attributes: {
     _author: { type: ObjectId , ref: 'Person' , required: true },
+    _parent: { type: ObjectId , ref: 'Comment' , required: true },
     created: { type: Date , default: Date.now , required: true },
     message: { type: String , required: true }
   },
