@@ -82,7 +82,7 @@ var Show = decentral.define('Show', {
         if (!self.credits) self.credits = [];
         return { _id: { $in: self.credits.map(function(c) {
           return c._person;
-        }) } }
+        }) } };
       }
     }
   },
@@ -192,7 +192,7 @@ Recording.on('file:media', function(media) {
       if (err) console.error(err);
       // TODO: troubleshoot why created files don't have the correct Recording ID.
       // media.metadata.document
-      console.log('looking for media:', media._id)
+      console.log('looking for media:', media._id);
       var recording = recordings[0];
       if (!recording) return console.error('no document found.');
 
@@ -271,7 +271,7 @@ Recording.on('file:media', function(media) {
     name: media.filename,
     trackers: config.torrents.trackers,
     webseeds: config.service.seeds.map(function(x) {
-      return x + '/files/' + media._id
+      return x + '/files/' + media._id;
     })
   });
   var file = decentral.datastore.gfs.createReadStream({
@@ -403,7 +403,7 @@ decentral.start(function() {
         results: shows.map(function(x) {
           return {
             title: x.name
-          }
+          };
         })
       });
     });
