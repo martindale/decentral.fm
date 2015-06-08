@@ -138,6 +138,7 @@ var Recording = decentral.define('Recording', {
     description: { type: String , format: 'markdown' },
     hash: { type: String , max: 32 , render: { create: false } },
     credits:  [ Credit ],
+    comments: [ { type: ObjectId , ref: 'Comment' , render: { create: false } } ],
     // TODO: remove these in favor of a "Sources" object
     youtube: { type: String },
     soundcloud: { type: String },
