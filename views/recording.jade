@@ -10,6 +10,13 @@ block content
           a(href="/recordings/#{recording.slug}") #{recording.title}
           abbr.date.tooltipped(title="#{ moment( recording.released ).format('MMMM Do YYYY, h:mm:ss a') }") #{ moment( recording.released ).fromNow() }
         .extra.text(style="max-width: none;") !{ (recording.description) ? markdown( recording.description.split('\n\n')[0] ) : '' }
+          form.ui.form(action="/comments", method="post")
+            input(type="hidden", name="context", value="#{recording._id}")
+            .field
+              label Comment
+              textarea(name="message")
+            button.ui.submit.button Add Comment &raquo;
+
         .meta
           if (user && user.can('edit', recording))
             a.ui.button(href="/recordings/#{recording.slug}/edit")
