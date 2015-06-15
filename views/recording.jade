@@ -11,6 +11,7 @@ block content
           abbr.date.tooltipped(title="#{ moment( recording.released ).format('MMMM Do YYYY, h:mm:ss a') }") #{ moment( recording.released ).fromNow() }
         .extra.text(style="max-width: none;") !{ (recording.description) ? markdown( recording.description.split('\n\n')[0] ) : '' }
           form.ui.form(action="/comments", method="post")
+            input(type="hidden", name="_author", value="#{user._id}")
             input(type="hidden", name="context", value="#{recording._id}")
             .field
               label Comment
