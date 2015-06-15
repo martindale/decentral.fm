@@ -179,8 +179,27 @@ var Comment = decentral.define('Comment', {
     created: { type: Date , default: Date.now , required: true },
     message: { type: String , required: true }
   },
+  // TODO: Comment.contexts.html.on('create', ... )
+  // or:   Comment.on('create', {
+  //         context: 'html',
+  //       }, function() { ... });
+  // TODO: authorization endpoints
+  /* handlers: {
+    html: {
+      create: function(req, res, next) {
+        if (!req.user) return next();
+        var comment = this;
+        // TODO: how to attach author automatically to resources like this?
+        // do this in Maki proper, for sure.  Request contexts?
+      }
+    }
+  }, */
   icon: 'comment'
 });
+
+/* Comment.pre('create', function(next, done) {
+  var comment = this;
+}); */
 
 Recording.post('query', function(next, done) {
   var recordings = this;
@@ -203,7 +222,7 @@ Recording.on('file:media', function(media) {
       if (err) console.error(err);
       // TODO: troubleshoot why created files don't have the correct Recording ID.
       // media.metadata.document
-      console.log('looking for media:', media._id)
+      console.log('looking for media:', media._id);
       var recording = recordings[0];
       if (!recording) return console.error('no document found.');
 
