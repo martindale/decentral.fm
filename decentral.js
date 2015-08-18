@@ -138,6 +138,7 @@ var Recording = decentral.define('Recording', {
     description: { type: String , format: 'markdown' },
     hash: { type: String , max: 32 , render: { create: false } },
     credits:  [ Credit ],
+    comments: [ { type: ObjectId , ref: 'Comment' , render: { create: false } } ],
     // TODO: remove these in favor of a "Sources" object
     youtube: { type: String },
     soundcloud: { type: String },
@@ -170,6 +171,35 @@ var Checksum = decentral.define('Checksum', {
   },
   icon: 'lock'
 });
+
+var Comment = decentral.define('Comment', {
+  attributes: {
+    _author: { type: ObjectId , ref: 'Person' , required: true },
+    _parent: { type: ObjectId , ref: 'Comment' },
+    created: { type: Date , default: Date.now , required: true },
+    message: { type: String , required: true }
+  },
+  // TODO: Comment.contexts.html.on('create', ... )
+  // or:   Comment.on('create', {
+  //         context: 'html',
+  //       }, function() { ... });
+  // TODO: authorization endpoints
+  /* handlers: {
+    html: {
+      create: function(req, res, next) {
+        if (!req.user) return next();
+        var comment = this;
+        // TODO: how to attach author automatically to resources like this?
+        // do this in Maki proper, for sure.  Request contexts?
+      }
+    }
+  }, */
+  icon: 'comment'
+});
+
+/* Comment.pre('create', function(next, done) {
+  var comment = this;
+}); */
 
 Recording.post('query', function(next, done) {
   var recordings = this;
