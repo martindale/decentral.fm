@@ -14,3 +14,30 @@ block content
       if (show.website)
         a.ui.button(href="#{show.website}") Website
           i.external.icon
+
+  if (user)
+    h3 Create a Show
+    
+    form.ui.form.segment(method="post")
+      input(type="hidden", name="creator", value="#{user._id}")
+
+      .field.required
+        label Name
+        input(type="text", name="name", required)
+          
+      .field
+        label Description
+        textarea(name="description", rows="3")
+      
+      h4 Donations
+      .two.fields
+        .field
+          label Type
+          select.ui.dropdown(name="donations[type]")
+            option(value="bitcoin") Bitcoin
+        .field
+          label Destination
+          input(type="text", name="donations[destination]")
+            
+      button.ui.blue.submit.button(type="submit") Create &raquo;
+        

@@ -47,6 +47,8 @@ var Show = decentral.define('Show', {
     name:    { type: String , max: 35 , required: true , slug: true },
     created: { type: Date , default: Date.now , required: true },
     description: { type: String },
+    _creator: { type: ObjectId , ref: 'Person' },
+    _owner: { type: ObjectId , ref: 'Person' },
     credits:     [ Credit ],
     donations: {
       type: { type: String , enum: ['bitcoin'] },
@@ -80,7 +82,7 @@ var Show = decentral.define('Show', {
         if (!self.credits) self.credits = [];
         return { _id: { $in: self.credits.map(function(c) {
           return c._person;
-        }) } }
+        }) } };
       }
     }
   },
@@ -99,7 +101,6 @@ Show.pre('update', function(next, done) {
     };
     return next();
   }
-
 
   var validObject = mongoose.mongo.BSONPure.ObjectID.isValid( params.profiles.soundcloud );
   if (validObject) {
@@ -137,6 +138,7 @@ var Recording = decentral.define('Recording', {
     description: { type: String , format: 'markdown' },
     hash: { type: String , max: 32 , render: { create: false } },
     credits:  [ Credit ],
+    comments: [ { type: ObjectId , ref: 'Comment' , render: { create: false } } ],
     // TODO: remove these in favor of a "Sources" object
     youtube: { type: String },
     soundcloud: { type: String },
@@ -170,6 +172,35 @@ var Checksum = decentral.define('Checksum', {
   icon: 'lock'
 });
 
+var Comment = decentral.define('Comment', {
+  attributes: {
+    _author: { type: ObjectId , ref: 'Person' , required: true },
+    _parent: { type: ObjectId , ref: 'Comment' },
+    created: { type: Date , default: Date.now , required: true },
+    message: { type: String , required: true }
+  },
+  // TODO: Comment.contexts.html.on('create', ... )
+  // or:   Comment.on('create', {
+  //         context: 'html',
+  //       }, function() { ... });
+  // TODO: authorization endpoints
+  /* handlers: {
+    html: {
+      create: function(req, res, next) {
+        if (!req.user) return next();
+        var comment = this;
+        // TODO: how to attach author automatically to resources like this?
+        // do this in Maki proper, for sure.  Request contexts?
+      }
+    }
+  }, */
+  icon: 'comment'
+});
+
+/* Comment.pre('create', function(next, done) {
+  var comment = this;
+}); */
+
 Recording.post('query', function(next, done) {
   var recordings = this;
   Show.Model.populate( recordings , {
@@ -182,14 +213,16 @@ Recording.post('query', function(next, done) {
 
 Recording.on('file:media', function(media) {
 
-  setTimeout( findMedia , 2500); // media event happens before document is created
+  // TODO: make this an event listener.
+  // this would totally work in Rethink!
+  setTimeout( findMedia , 10000); // media event happens before document is created
 
   function findMedia() {
     Recording.query({ media: media._id }, function(err, recordings) {
       if (err) console.error(err);
       // TODO: troubleshoot why created files don't have the correct Recording ID.
       // media.metadata.document
-      console.log('looking for media:', media._id)
+      console.log('looking for media:', media._id);
       var recording = recordings[0];
       if (!recording) return console.error('no document found.');
 
@@ -268,7 +301,7 @@ Recording.on('file:media', function(media) {
     name: media.filename,
     trackers: config.torrents.trackers,
     webseeds: config.service.seeds.map(function(x) {
-      return x + '/files/' + media._id
+      return x + '/files/' + media._id;
     })
   });
   var file = decentral.datastore.gfs.createReadStream({
@@ -407,7 +440,7 @@ decentral.start(function() {
               return {
                 id: 'foo' || x._id,
                 title: x.name
-              }
+              };
             })
           }
         }
