@@ -180,7 +180,7 @@ var Comment = decentral.define('Comment', {
     message: { type: String , required: true }
   },
   // TODO: Comment.contexts.html.on('create', ... )
-  // or:   Comment.on('create', {
+  // or:   Comment.pre('create', {
   //         context: 'html',
   //       }, function() { ... });
   // TODO: authorization endpoints
@@ -197,9 +197,16 @@ var Comment = decentral.define('Comment', {
   icon: 'comment'
 });
 
-/* Comment.pre('create', function(next, done) {
+Comment.pre('create', {
+  service: 'http'
+}, function(next, done) {
+
+});
+
+Comment.pre('create', function(next, done) {
   var comment = this;
-}); */
+  next();
+});
 
 Recording.post('query', function(next, done) {
   var recordings = this;
