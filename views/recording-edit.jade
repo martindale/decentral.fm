@@ -35,7 +35,7 @@ block content
       .field
         label Hosts
         .ui.fluid.multiple.search.selection.dropdown
-          input(type="hidden", name="hosts")
+          input(type="hidden", name="hosts", value="#{hosts}")
           i.dropdown.icon
           .default.text Select hosts...
           .menu
@@ -46,7 +46,7 @@ block content
       .field
         label Producers
         .ui.fluid.multiple.search.selection.dropdown
-          input(type="hidden", name="producers")
+          input(type="hidden", name="producers", value="#{producers}")
           i.dropdown.icon
           .default.text Select producers...
           .menu
@@ -86,18 +86,22 @@ block scripts
       var rendered = marked( value );
       $('.preview').html( rendered );
     }
-
-    $('.ui.search')
-      .search({
-        apiSettings: {
-          url: '/search?q={query}'
-        },
-        type: 'category'
-      })
-    ;
     
-    $('.ui.multiple.search.dropdown')
-      .dropdown({
-        allowAdditions: true
-      })
-    ;
+    $(window).on('load', function() {
+      $('.ui.search').dropdown({
+        allowAdditions: true,
+        apiSettings: {
+          // apologies for oddity here... when Maki has proper SPA,
+          // this shouldn't be a problem
+          url: '/search?category=people&filter=%7B%22_show%22%3A%22#{item._id}%22%7D&q={query}'
+        },
+        type: 'category',
+        onSelect: function(result, response) {
+          var self = this;
+          console.log('controller:', self);
+          console.log('selected', result);
+          $(self).children('input').val( result.id );
+        }
+      });
+    });
+    

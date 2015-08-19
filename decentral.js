@@ -22,6 +22,7 @@ var context = new Context();
 var Torrent = require('node-torrent-stream');
 var readTorrent = require('read-torrent');
 var magnet = require('magnet-uri');
+var async = require('async');
 var _ = require('lodash');
 
 var crypto = require('crypto');
@@ -400,6 +401,7 @@ decentral.start(function() {
   });
 
   // TODO: internalize to maki, provide sane defaults
+  // see: https://github.com/martindale/maki/issues/47
   decentral.app.get('/recordings/:recordingSlug/edit', function(req, res, next) {
     Recording.get({ slug: req.param('recordingSlug') }, function(err, recording) {
       Show.Model.populate(recording, {
@@ -408,9 +410,28 @@ decentral.start(function() {
         if (!req.user) return res.error(404);
         if (!req.user.can('edit', recording)) return res.error(404);
         Person.query({}, function(err, people) {
-          return res.render('recording-edit', {
-            item: recording,
-            people: people
+          Person.Model.populate(recording, {
+            path: '_show.credits._person'
+          }, function(err, recording) {
+
+            var hosts = [];
+            var producers = [];
+            var guests = [];
+
+            recording._show.credits.forEach(function(x) {
+              if (x.role === 'host') {
+                hosts.push(x._person.username);
+              } else if (x.role === 'producer') {
+                producers.push(x._person.username);
+              }
+            });
+
+            return res.render('recording-edit', {
+              item: recording,
+              people: people,
+              hosts: hosts,
+              producers: producers
+            });
           });
         });
       });
@@ -431,20 +452,61 @@ decentral.start(function() {
   });
 
   decentral.app.get('/search', function(req, res, next) {
-    Show.query({}, function(err, shows) {
+    var stack = {};
+    if (req.param('category') === 'people') {
+      stack.people = collectPeople;
+    } else if (req.param('category') === 'shows') {
+      stack.shows = collectShows;
+    } else {
+      stack.people = collectPeople;
+      stack.shows = collectShows;
+    }
+
+    async.parallel(stack, function(err, results) {
       return res.send({
-        results: {
-          shows: {
-            name: 'Shows',
-            results: shows.map(function(x) {
-              return {
-                id: 'foo' || x._id,
-                title: x.name
-              };
-            })
-          }
-        }
+        results: results
       });
     });
+
+    function collectPeople(done) {
+      var query = {};
+      if (req.param('filter')) {
+        query = req.param('filter');
+      }
+
+      Person.query(query, function(err, people) {
+        if (err) return done(err);
+        done(null, {
+          name: 'People',
+          results: people.map(function(x) {
+            return {
+              id: x._id,
+              title: x.username
+            };
+          })
+        });
+      });
+    }
+
+    function collectShows(done) {
+      var query = {};
+      if (req.param('filter')) {
+        query = req.param('filter');
+      }
+
+      Show.query(query, function(err, show) {
+        if (err) return done(err);
+        done(null, {
+          name: 'Shows',
+          results: show.map(function(x) {
+            return {
+              id: x._id,
+              title: x.name
+            };
+          })
+        });
+      });
+    }
+
   });
 });
