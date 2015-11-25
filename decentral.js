@@ -1,6 +1,10 @@
-var Maki = require('maki');
 var config = require('./config');
-var decentral = new Maki( config );
+
+var Maki = require('maki');
+var Byrd = require('byrd');
+
+var decentral = new Maki(config);
+var byrd = new Byrd(config.byrd);
 
 var mongoose = decentral.mongoose;
 var Schema = mongoose.Schema;

@@ -77,6 +77,21 @@ module.exports = {
       'udp://tracker.coppersurfer.tk:6969'
     ]
   },
+  byrd: {
+    ssl: false,
+    ca: [],
+    cert: null,
+    key: null,
+    seeds: [
+      { address: 'byrd.io', port: 443, protocol: 'https' },
+      { address: 'byrd.ericmartindale.com', port: 443, protocol: 'https' }
+    ],
+    address: '127.0.0.1',
+    port: 8080,
+    protocol: 'http',
+    logLevel: 4,
+    datadir: "data/byrd.db"
+  },
   auth: {
     local: {
       enabled: true
