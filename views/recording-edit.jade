@@ -19,11 +19,56 @@ block content
     .field
       label Description
       textarea(name="description", style="height: 20em;") #{item.description}
+
+
+    h3 People
+    .two.fields
+      .field
+        label Guests
+        .ui.fluid.multiple.search.selection.dropdown
+          input(type="hidden", name="guests")
+          i.dropdown.icon
+          .default.text Select guests...
+          .menu
+            for person in people
+              .item(data-value="#{person._id}") #{person.username}
+      .field
+        label Hosts
+        .ui.fluid.multiple.search.selection.dropdown
+          input(type="hidden", name="hosts", value="#{hosts}")
+          i.dropdown.icon
+          .default.text Select hosts...
+          .menu
+            for person in people
+              .item(data-value="#{person._id}") #{person.username}
     
+    .two.fields
+      .field
+        label Producers
+        .ui.fluid.multiple.search.selection.dropdown
+          input(type="hidden", name="producers", value="#{producers}")
+          i.dropdown.icon
+          .default.text Select producers...
+          .menu
+            for person in people
+              .item(data-value="#{person._id}") #{person.username}
+
+      .field
+        label Credits
+        .ui.fluid.multiple.search.selection.dropdown
+          input(type="hidden", name="producers")
+          i.dropdown.icon
+          .default.text Select credits...
+          .menu
+            for person in people
+              .item(data-value="#{person._id}") #{person.username}
+
+    h3 Tracking
     .two.fields
       .field
         label YouTube Video ID
         input(type="text", name="youtube", value="#{item.youtube || ''}")
+
 
       .field
         label Soundcloud ID
@@ -41,3 +86,22 @@ block scripts
       var rendered = marked( value );
       $('.preview').html( rendered );
     }
+    
+    $(window).on('load', function() {
+      $('.ui.search').dropdown({
+        allowAdditions: true,
+        apiSettings: {
+          // apologies for oddity here... when Maki has proper SPA,
+          // this shouldn't be a problem
+          url: '/search?category=people&filter=%7B%22_show%22%3A%22#{item._id}%22%7D&q={query}'
+        },
+        type: 'category',
+        onSelect: function(result, response) {
+          var self = this;
+          console.log('controller:', self);
+          console.log('selected', result);
+          $(self).children('input').val( result.id );
+        }
+      });
+    });
+    

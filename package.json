@@ -18,10 +18,12 @@
   "homepage": "https://github.com/martindale/decentral.fm",
   "dependencies": {
     "byrd": "^1.0.1",
+    "async": "^1.4.2",
     "lodash": "^3.8.0",
     "magnet-uri": "^4.2.0",
     "maki": "git://github.com/martindale/maki",
-    "maki-passport-local": "0.0.2",
+    "maki-auth-simple": "^0.1.1",
+    "maki-passport-local": "0.0.4",
     "maki-passport-soundcloud": "0.0.1",
     "moment": "^2.8.4",
     "node-torrent-stream": "git://github.com/martindale/node-torrent-stream#decentral.fm",
