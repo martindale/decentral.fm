@@ -30,13 +30,6 @@ var auth = new Auth({
   }
 });
 
-var PassportSoundcloud = require('maki-passport-soundcloud');
-var passportSoundcloud = new PassportSoundcloud({
-  resource: 'Person',
-  path: '/profiles/soundcloud',
-  multi: true
-});
-
 var Context = require('./lib/Context');
 var context = new Context();
 
@@ -50,18 +43,11 @@ var crypto = require('crypto');
 var stream = require('stream');
 
 decentral.use( passport );
-decentral.use( passportSoundcloud );
 decentral.use( context );
 
 var Credit = new decentral.mongoose.Schema({
   _person: { type: ObjectId , ref: 'Person', required: true },
   role: { type: String , enum: ['host', 'producer', 'guest'] , required: true }
-});
-
-var SoundcloudProfile = new decentral.mongoose.Schema({
-  id: { type: String , required: true },
-  username: { type: String },
-  token: { type: String }
 });
 
 var Show = decentral.define('Show', {
@@ -76,19 +62,6 @@ var Show = decentral.define('Show', {
       type: { type: String , enum: ['bitcoin'] },
       destination: { type: String , max: 35 }
     },
-    settings: {
-      soundcloud: {
-        enabled: { type: Boolean , default: true },
-        token: { type: String }
-      }
-    },
-    profiles: {
-      soundcloud: {
-        id: { type: String },
-        username: { type: String },
-        token: { type: String }
-      }
-    }
   },
   requires: {
     'Recording': {
@@ -109,38 +82,6 @@ var Show = decentral.define('Show', {
     }
   },
   icon: 'unmute'
-});
-
-Show.pre('update', function(next, done) {
-  var params = this;
-  if (!params.profiles || !params.profiles.soundcloud) return next();
-
-  if (params.profiles.soundcloud === 'disable') {
-    params.profiles.soundcloud = {
-      id: null,
-      username: null,
-      token: null
-    };
-    return next();
-  }
-
-  var validObject = mongoose.mongo.BSONPure.ObjectID.isValid( params.profiles.soundcloud );
-  if (validObject) {
-    Person.get({ 'profiles.soundcloud._id': params.profiles.soundcloud }, function(err, person) {
-      var soundclouds = person.profiles.soundcloud;
-      var profile = _.find( soundclouds , function(s) {
-        return (s._id.toString() === params.profiles.soundcloud);
-      });
-
-      profile.id = profile._id.toString();
-      params.profiles.soundcloud = profile.toObject();
-
-      next();
-
-    });
-  } else {
-    return done('invalid object in profiles field');
-  }
 });
 
 var Recording = decentral.define('Recording', {
@@ -234,89 +175,6 @@ Recording.post('query', function(next, done) {
 });
 
 Recording.on('file:media', function(media) {
-
-  // TODO: make this an event listener.
-  // this would totally work in Rethink!
-  setTimeout( findMedia , 10000); // media event happens before document is created
-
-  function findMedia() {
-    Recording.query({ media: media._id }, function(err, recordings) {
-      if (err) console.error(err);
-      // TODO: troubleshoot why created files don't have the correct Recording ID.
-      // media.metadata.document
-      console.log('looking for media:', media._id);
-      var recording = recordings[0];
-      if (!recording) return console.error('no document found.');
-
-      var fs = require('fs');
-      var http = require('https');
-
-      var file = decentral.datastore.gfs.createReadStream({
-        _id: media._id
-      });
-      //file.pause();
-      var bufs = [];
-      file.on('data', function(b) {
-        bufs.push(b);
-      });
-      file.on('end', function() {
-        Show.get({ _id: recording._show }, function(err, show) {
-          var buf = Buffer.concat( bufs );
-          var boundaryKey = require('crypto').randomBytes(16).toString('hex');
-
-          var data = {
-            'track[sharing]': 'public',
-            'oauth_token': show.profiles.soundcloud.token,
-            'track[title]': recording.title,
-            'track[description]': recording.description
-          };
-
-          var body = '--' + boundaryKey + '\r\n';
-          Object.keys( data ).forEach(function(k) {
-            body += 'Content-Disposition: form-data; name="' + k + '"\r\n\r\n';
-            body += data[k] + '\r\n';
-            body += '--' + boundaryKey + '\r\n';
-          });
-
-          body += 'Content-Disposition: form-data; name="track[asset_data]"; filename="'+media.filename+'"\r\n\r\n';
-          //body += 'Content-Type: application/octet-stream\r\n\r\n';
-          body += buf.toString('binary'); // THEN we convert to binary?  wtf?
-          body += '\r\n--' + boundaryKey + '--\r\n';
-
-          var request = http.request({
-            host: 'api.soundcloud.com',
-            port: 443,
-            path: '/tracks',
-            method: 'POST',
-            headers: {
-              'host': 'api.soundcloud.com',
-              'content-length': Buffer.byteLength( body ).toString(),
-              'accept-encoding': 'gzip, deflate',
-              'accept': '*/*',
-              'user-agent': 'SoundCloud Python API Wrapper 0.4.1',
-              'content-type': 'multipart/form-data; boundary=' + boundaryKey
-            }
-          }, function(res) {
-            console.log('finally!');
-            console.log(res.req._headers);
-            console.log(res.statusCode);
-            console.log('soundcloud creation:', res.statusCode , res.headers);
-          });
-
-          request.on('error', function(err) { console.error('request error: ' + err); });
-
-          request.write(body);
-          request.end();
-        });
-      });
-
-      //file.resume({ end: false });
-      file.resume();
-    });
-  }
-});
-
-Recording.on('file:media', function(media) {
   console.log('received media:', media);
 
   var torrent = new Torrent({
@@ -394,10 +252,6 @@ var Person = decentral.define('Person', {
     username: { type: String , max: 35 , slug: true },
     password: { type: String , max: 70 , masked: true },
     bio: { type: String , max: 1024 },
-    //profiles: [ Profile ]
-    profiles: {
-      soundcloud: [ SoundcloudProfile ]
-    }
   },
   virtuals: {
     'name.full': function() {
