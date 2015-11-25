@@ -1,5 +1,6 @@
-var Maki = require('maki');
 var config = require('./config');
+
+var Maki = require('maki');
 var decentral = new Maki( config );
 
 var mongoose = decentral.mongoose;
@@ -8,6 +9,23 @@ var ObjectId = Schema.Types.ObjectId;
 
 var Passport = require('maki-passport-local');
 var passport = new Passport({ resource: 'Person' });
+
+var Auth = require('maki-auth-simple');
+var auth = new Auth({
+  resource: 'Person',
+  capabilities: {
+    'publish': [function isHost() {
+      // ugh, can't wait to use new node stuff.
+      // TODO: test Maki with Node 5.0.
+      return this.credits.map(function(x) {
+        return x._id.toString();
+      }).filter(function(x) {
+        return x === context._id.toString();
+      }).length;
+    }],
+    'manage': ['admin']
+  }
+});
 
 var PassportSoundcloud = require('maki-passport-soundcloud');
 var passportSoundcloud = new PassportSoundcloud({
