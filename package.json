@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/martindale/decentral.fm",
   "dependencies": {
+    "async": "^1.4.2",
     "lodash": "^3.8.0",
     "magnet-uri": "^4.2.0",
     "maki": "git://github.com/martindale/maki",
